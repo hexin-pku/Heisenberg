@@ -1,0 +1,12 @@
+%chk=HF6-31G_HF1.chk
+# scan hf/6-31g
+
+Title Card Required
+
+0 1
+ F                  0.000   0.0   0.0
+ H                  0.917   0.0   0.0
+
+ 1 2 1.0
+ 2
+
