@@ -10,19 +10,7 @@
 #include "Hsbg_Global.h"
 
 using namespace std;
-
-typedef struct Gnode
-{
-    string name; // atom name (neccessary with fragment ?)
-    int indx;
-    int znum;
-    int mass;
-    int mole; // means fragments
-    double x;
-    double y;
-    double z;
-    Gnode* next; // for solving topology problem
-} *pGnode;
+using namespace Hsbg;
 
 class HGeom
 {
@@ -34,7 +22,7 @@ class HGeom
         int iatom;
         int imole;
         int ibasis;
-        pGnode geom;
+        GPoint* geom;
         
     HGeom()
     {
@@ -44,7 +32,7 @@ class HGeom
         int iatom=0;
         int imole=0;
         int ibasis=0;
-        pGnode geom = NULL;
+        GPoint* geom = NULL;
     }
     
     ~HGeom()
@@ -55,13 +43,13 @@ class HGeom
     int set_Geom()
     {
         if(this->Natom==0) cerr << "warning: set geometry with zero atom!";
-        this->geom = new Gnode[this->Natom+1]; //?
+        this->geom = new GPoint[this->Natom+1]; //?
     }
     
     int set_Geom(int num)
     {
         if(this->Natom==0) cerr << "warning: set geometry with zero atom!";
-        this->geom = new Gnode[num+1];
+        this->geom = new GPoint[num+1];
     }
         
     int read_Geom(string line) // called by Hsbg_Parser, read a line
@@ -73,7 +61,7 @@ class HGeom
 	    	cerr << "error: istringstream is null, in ( Hsbg_Geom, HGeom::read_Geom)" << endl;
 	    	exit(-1);
 	    }
-	    this->iatom++;
+	    this->iatom++; // from 1 to count
 	    istr >> (this->geom[this->iatom]).name;
 	    istr >> (this->geom[this->iatom]).x;
 	    istr >> (this->geom[this->iatom]).y;

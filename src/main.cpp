@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 	task.set_IO(gjffile,logfile);
 	task.set_Job("sp","hf","3-21g"); //default setting
 	task.read_Task();
-	cout << task << endl;
+	cout << task << task.TaskGeom << task.TaskBasis << endl;
 	//task.solver();
 	//task.result();
 	return 0;

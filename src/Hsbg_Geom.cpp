@@ -35,6 +35,9 @@ HGeom* Read_Geom(HTask task, string geominput)
 		if(cnt>AZ) break;
 	}
 	fin.close();
+	
+	
+	
 }
 
 

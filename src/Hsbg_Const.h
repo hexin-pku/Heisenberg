@@ -30,5 +30,19 @@
 #define c_na 6.02214179E23                   /*- Avagadro's number -*/
 #define c_me 9.10938215E-31                  /*- Electron rest mass (in kg)-*/
 
+#define MAX_ELEMENT 118
+
+static const char *elements_label[]=
+{"X","H","HE","LI","BE","B","C","N","O","F","NE","NA","MG","AL","SI",
+"P","S","CL","AR","K","CA","SC","TI","V","CR","MN","FE","CO","NI",
+"CU","ZN","GA","GE","AS","SE","BR","KR","RB","SR","Y","ZR","NB","MO",
+"TC","RU","RH","PD","AG","CD","IN","SN","SB","TE","I","XE","CS","BA",
+"LA","CE","PR","ND","PM","SM","EU","GD","TB","DY","HO","ER","TM","YB",
+"LU","HF","TA","W","RE","OS","IR","PT","AU","HG","TL","PB","BI","PO",
+"AT","RN","FR","RA","AC","TH","PA","U","NP","PU","AM","CM","BK","CF",
+"ES","FM","MD","NO","LR","RF","DB","SG","BH","HS","MT","DS","RG",
+  "UUB","UUT","UUQ","UUP","UUH","UUS","UUO"};
+
+
 
 #endif

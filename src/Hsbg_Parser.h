@@ -104,10 +104,7 @@ class HTask
 	    while(getline(fin,line))
 	    {
 	    	line=trim(line);
-	    	if(line=="\r" || line.size()<=1) continue;
-	    	
-	    	if(line.size()==1) continue;
-	    	
+	    	if(line=="\r" || line.size()<=1) continue;	    	
 		    if(line[0]=='%') continue;  // here we don't set chkfile
 		    if(line[0]=='#')            // main task settings
 		    {
@@ -149,11 +146,28 @@ class HTask
 		    }
 	    }	    
 	    fin.close();
+	    
+	    this->read_Postdo();
 	    return 0;
     }
     
-    int read_Postdo()                   // post-do things, relating parser of basis
-    {
+    int read_Postdo()                   // post-do things, relating parser of basis, a little complex
+    {        
+        this->TaskBasis.name = this->Basis;
+        this->TaskBasis.Natom = this->TaskGeom.Natom;
+        this->TaskBasis.set_Basis(this->TaskGeom.Natom);
+        
+        for(int i=1; i <= this->TaskGeom.Natom ; i++)
+        {
+        	this->TaskBasis.basis[i].setfrom_GPoint(this->TaskGeom.geom[i]);
+        }        
+        
+        for(int i=1; i<= this->TaskBasis.Natom; i++)
+        {
+        	this->TaskBasis.basis[i].find_ZnumbrPeroid( this->TaskBasis.basis[i].name );
+        	this->TaskBasis.basis[i].set_Cloud( this->Basis, this->TaskBasis.basis[i].name );
+        }
+            
 	    return 0;
     }
     
