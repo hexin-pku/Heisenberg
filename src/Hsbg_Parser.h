@@ -1,8 +1,8 @@
 // Alias: Hsbg_Tasker.h
 // this file is the parser of task, dealing with the geometry and basis
 
-#ifndef _Hsbg_Parser_H_
-#define _Hsbg_Parser_H_
+#ifndef Hsbg_Parser_H
+#define Hsbg_Parser_H
 
 #include <iostream>
 #include <string>
@@ -10,8 +10,10 @@
 #include <sstream>
 
 #include "Hsbg_Const.h"
+#include "Hsbg_Tools.h"
 #include "Hsbg_Global.h"
 #include "Hsbg_Geom.h"
+#include "Hsbg_Orbital.h"
 #include "Hsbg_Basis.h"
 
 using namespace std;
@@ -41,8 +43,7 @@ class HTask
         HGeom   TaskGeom;
         HBasis  TaskBasis;
         int     Natom;
-        int     Nmole; // alias Nfrag
-        int     Nbasis;
+        int		Nelec;
     // 
         //HTasK();
         //~HTask();
@@ -86,8 +87,8 @@ class HTask
 	    this->TaskGeom.Natom = cnt-1;
 	    this->TaskGeom.set_Geom(this->TaskGeom.Natom);
 	    fin.close();
-	    this->TaskGeom.name = this->Gjffile;
-	    replace_distinct(this->TaskGeom.name, ".gjf", "");
+	    this->TaskGeom.Gname = this->Gjffile;
+	    replace_distinct(this->TaskGeom.Gname, ".gjf", "");
 	    return 0;
     }
     
@@ -110,7 +111,7 @@ class HTask
 		    {
 		    	line = line.replace(line.find("#"), 1, " ");
 		    	line = line.replace(line.find("/"), 1, " ");
-		        istringstream istr(line); // error ? not define?
+		        istringstream istr(line);
 		        while(istr >> buff)
 		        {
 		            this->Taskparser(buff);
@@ -153,7 +154,7 @@ class HTask
     
     int read_Postdo()                   // post-do things, relating parser of basis, a little complex
     {        
-        this->TaskBasis.name = this->Basis;
+        this->TaskBasis.Bname = this->Basis;
         this->TaskBasis.Natom = this->TaskGeom.Natom;
         this->TaskBasis.set_Basis(this->TaskGeom.Natom);
         
@@ -161,21 +162,21 @@ class HTask
         {
         	this->TaskBasis.basis[i].setfrom_GPoint(this->TaskGeom.geom[i]);
         }        
-        
         for(int i=1; i<= this->TaskBasis.Natom; i++)
         {
-        	this->TaskBasis.basis[i].find_ZnumbrPeroid( this->TaskBasis.basis[i].name );
-        	this->TaskBasis.basis[i].set_Cloud( this->Basis, this->TaskBasis.basis[i].name );
+        	this->TaskBasis.basis[i].link_Info( this->TaskBasis.basis[i].aname );
+        	this->TaskBasis.basis[i].set_BPoint( this->Basis, this->TaskBasis.basis[i].aname );
         }
-            
+        this->TaskBasis.set_Map();
 	    return 0;
+	    
     }
     
     int Taskparser(string term)
     {
-        string dict_job[5] = {"sp", "opt", "freq", "opt+freq", "scan"};
-        string dict_method[7] = {"hf", "rhf", "uhf", "dft", "mp2", "ccsd", "cisd"};
-        string dict_basis[3] = {"3-21g", "6-31g", "6-311g"};
+        string dict_job[] = {"sp", "opt", "freq", "opt+freq", "scan"};
+        string dict_method[] = {"hf", "rhf", "uhf", "dft", "mp2", "ccsd", "cisd"};
+        string dict_basis[] = {"3-21g", "6-31g", "6-311g"};
         
         for(int i=0; i < getArrayLen(dict_job); i++)
         {
@@ -214,7 +215,7 @@ class HTask
         output << "the output file : " << HT.Logfile << endl;
         output << "the settings    : # " << HT.Job << " "<< HT.Method << "/" << HT.Basis << endl;
         output << "(  Q  ,  S  )   : " << HT.Charge << ",     " << HT.Smulti << endl;
-        output << HT.TaskGeom;
+        output << HT.TaskGeom << endl << HT.TaskBasis << endl;
         return output;
     }
 };

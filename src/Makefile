@@ -1,10 +1,10 @@
 CFLAG=g++
 Hsbg= main.cpp
-EXE=main
+EXE=Hsbg
 LALIB=../inc/Eigen
 
 default:
-	$(CFLAG) $(Hsbg) -o $(EXE)
+	$(CFLAG) -L$(LALIB) $(Hsbg) -o $(EXE)
     
 clean:
 	rm -rf *.a

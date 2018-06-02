@@ -1,58 +1,45 @@
-#ifndef _Hsbg_Geom_H_
-#define _Hsbg_Geom_H_
+#ifndef Hsbg_Geom_H
+#define Hsbg_Geom_H
 
 #include <iostream>
-#include <iomanip>
+#include <iomanip>			// IO format control
 #include <string>
 #include <sstream>
 
 #include "Hsbg_Const.h"
+#include "Hsbg_Tools.h"
 #include "Hsbg_Global.h"
 
 using namespace std;
 using namespace Hsbg;
 
-class HGeom
+class HGeom: public GPoint	// defination of GPoint is found at "Hsbg_Global.h"
 {
     public:
-        string name; // system name, might same with filename
-        int Natom;
-        int Nmole;
-        int Nbasis;
-        int iatom;
-        int imole;
-        int ibasis;
+        string 	Gname; 		// system name, default filename
+        int 	Natom;		// the number of atoms
+        int 	Nfrag;		// the number of fragments
+        int 	iatom;
+        int 	ifrag;
         GPoint* geom;
-        
-    HGeom()
-    {
-        int Natom=0;
-        int Nmole=0;
-        int Nbasis=0;
-        int iatom=0;
-        int imole=0;
-        int ibasis=0;
-        GPoint* geom = NULL;
-    }
+    
+    //HGeom();
     
     ~HGeom()
     {
         delete[] this->geom;
     }
-    
-    int set_Geom()
-    {
-        if(this->Natom==0) cerr << "warning: set geometry with zero atom!";
-        this->geom = new GPoint[this->Natom+1]; //?
-    }
-    
+        
     int set_Geom(int num)
     {
-        if(this->Natom==0) cerr << "warning: set geometry with zero atom!";
-        this->geom = new GPoint[num+1];
+    	if(num <= 0) {cerr << "warning: set geometry with zero atom!"; exit(-1);}
+        this->Natom = num;
+        this->iatom = 0;
+        this->geom = new GPoint[this->Natom+1];
+        return 0;
     }
-        
-    int read_Geom(string line) // called by Hsbg_Parser, read a line
+           
+    int read_Geom(string line) 			// read from a string line
     {
         string  buff;
         istringstream istr(line);
@@ -61,31 +48,31 @@ class HGeom
 	    	cerr << "error: istringstream is null, in ( Hsbg_Geom, HGeom::read_Geom)" << endl;
 	    	exit(-1);
 	    }
-	    this->iatom++; // from 1 to count
-	    istr >> (this->geom[this->iatom]).name;
+	    
+	    this->iatom++;
+	    if(this->iatom > this->Natom)
+	    {
+	    	cerr << "error: the number of atom is overload the prepared" << endl;
+	    	exit(-1);
+	    }
+	    istr >> (this->geom[this->iatom]).aname;
 	    istr >> (this->geom[this->iatom]).x;
 	    istr >> (this->geom[this->iatom]).y;
 	    istr >> (this->geom[this->iatom]).z;
 	    (this->geom[this->iatom]).indx = this->iatom;
     }
     
-    int solve_Top(string line)
+    int solve_Top(string line)			// solve the topology or connection of molecules
     {
 	    return 0;
     }
     
     friend ostream &operator<<( ostream &output, HGeom &HG )
     {
-        output << endl << "the Geometry of "<< HG.name << " shows as follow:" << endl;
+        output << endl << "the Geometry of "<< HG.Gname << " shows as follow:" << endl;
         for(int i=1; i <= HG.Natom; i++)
         {
-            output << setiosflags(ios::fixed) << setprecision(8) << HG.geom[i].name ;
-            output << "         ";
-            output << HG.geom[i].x;
-            output << "    ";
-            output << HG.geom[i].y;
-            output << "    ";
-            output << HG.geom[i].z << endl;
+            output << HG.geom[i].get_Point();
         }
         return output;          
     }
