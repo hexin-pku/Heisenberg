@@ -4,28 +4,39 @@
 #include <string>
 
 #include "Hsbg_Const.h"
-#include "Hsbg_Global.h"
+#include "Hsbg_Point.h"
 #include "Hsbg_Geom.h"
 #include "Hsbg_Basis.h"
 #include "Hsbg_Parser.h"
+#include "Hsbg_InteG.h"
+#include "Hsbg_SCF.h"
 
 using namespace std;
 using namespace Hsbg;
 
 int main(int argc, char *argv[])
 {
-	string gjffile="../test/h2.gjf";
-	string logfile="../test/h2.log";
+	string hiffile="../test/HeH.hif";
+	string logfile="../test/HeH.hof";
 	
 	if(argc == 1)
 	{
-		cout << "need an argument!" << endl;
-		cout << "if you want try default settings, you can use argument -d" << endl;
+		cout << "Need an argument!" << endl;
+		cout << "You can try to use argument -d, this will gives you an example "
+			 << "of HeH+ calculation" << endl;
 		return -1;
 	}
-	if(argc == 2 && string(argv[1])!="-d")
+	if(argc == 2 && string(argv[1])!="-d" && string(argv[1])!="-h" )
 	{
 		cout << "Unrecognized arguments" << endl;
+		return -1;
+	}
+	if(argc == 2 && string(argv[1]) =="-h")
+	{
+		cout << "Usage:" << endl;
+		cout << "    -d                |   run default" << endl;
+		cout << "    -f   *.hif/*.gjf  |   run a *.hif/*.gjf file" << endl;
+		cout << "    -h                |   help" << endl;
 		return -1;
 	}
 	if(argc%2==0 && string(argv[1])!="-d")
@@ -33,33 +44,46 @@ int main(int argc, char *argv[])
 		cout << "The number of arguments should be pairs" << endl;
 		return -1;
 	}
+	if(argc%2==1 && (string(argv[1])=="-d" || string(argv[1])=="-h") )
+	{
+		cout << "Arguments number error, see by -h" << endl;
+	}
 	if(argc%2==1)
 	{
 		for(int i=0; i < argc/2; i++)
 		{
-			if(string(argv[2*i+1])=="-f") // set IOfiles, can not use switch
+			if(string(argv[2*i+1])=="-f")
 			{
-				gjffile=argv[2*i+2];
-				logfile=gjffile;
-				replace_distinct(logfile,".gjf",".log");
-				if(logfile==gjffile)
+				hiffile=argv[2*i+2];
+				logfile=hiffile;
+				replace_distinct(logfile,".hif",".hof");
+				if(logfile==hiffile)
 				{
-					cout << "The input format (suffix) must be .gjf" << endl;
+					replace_distinct(logfile,".gjf",".log");
+				}else{
+					continue;
+				}
+				if(logfile==hiffile)
+				{
+					cout << "The input format (suffix) must be .hif/.gjf" << endl;
 					return -1;
 				}
 			}
 		}
 	}
-	
-	//cout << gjffile << "\t"<<logfile << endl;
-	//return 0;
-	
-	HTask task = HTask();
-	task.set_IO(gjffile,logfile);
-	task.set_Job("sp","hf","3-21g"); //default setting
-	task.read_Task();
-	cout << task ;//.TaskBasis <<endl;
-	//task.solver();
-	//task.result();
+
+	HTask task = HTask();						// build a task	
+	task.set_IO(hiffile, logfile);				// set IO settings
+	task.set_Job("sp","hf","3-21g"); 			// default setting, if the hiffile doesn't give settings
+	task.read_Task();							// read from *.hif file
+	cout << task ;								// show detials of the task
+	HScf my_scf = HScf(task.Title);		// build an object of SCF
+	my_scf.set_Space(task);						// set SCF basisset space size
+	my_scf.set_Threshold(0.00000001);			// set SCF threshold
+	my_scf.loop_SCF();							// do SCF job
 	return 0;
+
 }
+
+
+

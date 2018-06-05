@@ -1,9 +1,10 @@
-#
-CODE = main.cc
-EXE = scf
+# the executable file locates in src directory
+CODE = main.cpp
+EXE = Hsbg
+LALIB = ./inc/
 
 Default:
-    g++ -I../inc/Eigen ./src/$(CODE) -o $(EXE)
+	g++ -I$(LALIB) ./src/$(CODE) -o ./src/$(EXE)
 
 clean:
-    rm -rf *.o $(EXE)
+	rm -rf *.o $(EXE)

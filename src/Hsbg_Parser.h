@@ -11,7 +11,7 @@
 
 #include "Hsbg_Const.h"
 #include "Hsbg_Tools.h"
-#include "Hsbg_Global.h"
+#include "Hsbg_Point.h"
 #include "Hsbg_Geom.h"
 #include "Hsbg_Orbital.h"
 #include "Hsbg_Basis.h"
@@ -23,7 +23,7 @@ class HTask
 {
     public:
     //  IO/Sys settings
-        string  Gjffile;
+        string  Hiffile;
         //string  Chkfile;
         string  Logfile;
         int     Maxmem;
@@ -44,13 +44,14 @@ class HTask
         HBasis  TaskBasis;
         int     Natom;
         int		Nelec;
+        int		N_set;
     // 
         //HTasK();
         //~HTask();
     
-    int set_IO(string gjffile, string logfile)
+    int set_IO(string Hiffile, string logfile)
     {
-        this->Gjffile = gjffile;
+        this->Hiffile = Hiffile;
         this->Logfile = logfile;
         return 0;
     }
@@ -69,10 +70,10 @@ class HTask
         string line;
 	    fstream fin;
 	    
-	    fin.open(this->Gjffile.data(), ios::in);
+	    fin.open(this->Hiffile.data(), ios::in);
 	    if(fin == NULL)
 	    {
-		    cerr << "error: "<< this->Gjffile <<" doesn't exist" << endl;
+		    cerr << "error: "<< this->Hiffile <<" doesn't exist" << endl;
 		    exit(-1);
 	    }
 	    
@@ -87,7 +88,7 @@ class HTask
 	    this->TaskGeom.Natom = cnt-1;
 	    this->TaskGeom.set_Geom(this->TaskGeom.Natom);
 	    fin.close();
-	    this->TaskGeom.Gname = this->Gjffile;
+	    this->TaskGeom.Gname = this->Hiffile;
 	    replace_distinct(this->TaskGeom.Gname, ".gjf", "");
 	    return 0;
     }
@@ -100,7 +101,7 @@ class HTask
 	    fstream fin;
 	    
 	    this->read_Predo();             // pre-do things, relating parser of geometry
-	    fin.open(this->Gjffile.data(), ios::in);
+	    fin.open(this->Hiffile.data(), ios::in);
 	    
 	    while(getline(fin,line))
 	    {
@@ -147,7 +148,6 @@ class HTask
 		    }
 	    }	    
 	    fin.close();
-	    
 	    this->read_Postdo();
 	    return 0;
     }
@@ -161,13 +161,14 @@ class HTask
         for(int i=1; i <= this->TaskGeom.Natom ; i++)
         {
         	this->TaskBasis.basis[i].setfrom_GPoint(this->TaskGeom.geom[i]);
-        }        
-        for(int i=1; i<= this->TaskBasis.Natom; i++)
-        {
-        	this->TaskBasis.basis[i].link_Info( this->TaskBasis.basis[i].aname );
+        	this->TaskBasis.basis[i].link_Info( this->TaskBasis.basis[i].aname ); // only BPoint with link info
         	this->TaskBasis.basis[i].set_BPoint( this->Basis, this->TaskBasis.basis[i].aname );
+        	this->TaskBasis.basis[i].conv_AUnit();
         }
         this->TaskBasis.set_Map();
+        this->TaskBasis.count_Allznum();
+        this->Nelec = this->TaskBasis.Allznum - this->Charge;
+        this->N_set = this->TaskBasis.idmap[this->Natom] + this->TaskBasis.basis[this->Natom].ncgto;
 	    return 0;
 	    
     }
@@ -176,7 +177,7 @@ class HTask
     {
         string dict_job[] = {"sp", "opt", "freq", "opt+freq", "scan"};
         string dict_method[] = {"hf", "rhf", "uhf", "dft", "mp2", "ccsd", "cisd"};
-        string dict_basis[] = {"3-21g", "6-31g", "6-311g"};
+        string dict_basis[] = {"3-3g","3-21g", "6-31g", "6-311g"};
         
         for(int i=0; i < getArrayLen(dict_job); i++)
         {
@@ -211,10 +212,13 @@ class HTask
         output << "========== task ID: ";
         output << HT.Title ;
         output << " ==========" << endl;
-        output << "the input  file : " << HT.Gjffile << endl;
+        output << "the input  file : " << HT.Hiffile << endl;
         output << "the output file : " << HT.Logfile << endl;
         output << "the settings    : # " << HT.Job << " "<< HT.Method << "/" << HT.Basis << endl;
         output << "(  Q  ,  S  )   : " << HT.Charge << ",     " << HT.Smulti << endl;
+        output << "with Natom	   : " << HT.Natom << endl;
+        output << "with Nelec	   : " << HT.Nelec << endl;
+        output << "with N_set	   : " << HT.N_set << endl;
         output << HT.TaskGeom << endl << HT.TaskBasis << endl;
         return output;
     }

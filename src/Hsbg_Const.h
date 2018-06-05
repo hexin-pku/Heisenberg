@@ -10,6 +10,7 @@
 #define c_bohr2angstroms 0.52917720859       /*- Bohr to Angstroms conversion factor -*/
 #define c_bohr2m 0.52917720859E-10           /*- Bohr to meters conversion factor -*/
 #define c_bohr2cm 0.52917720859E-8           /*- Bohr to centimeters conversion factor -*/
+#define c_bohr2ai 0.52917720859E-0           /*- Bohr to centimeters conversion factor -*/
 #define c_amu2g 1.660538782E-24              /*- Atomic mass units to grams conversion factor -*/
 #define c_amu2kg 1.660538782E-27             /*- Atomic mass units to kg conversion factor -*/
 #define c_au2amu 5.485799097E-4              /*- Atomic units (m$@@e$) to atomic mass units conversion factor -*/
@@ -30,10 +31,11 @@
 #define c_na 6.02214179E23                   /*- Avagadro's number -*/
 #define c_me 9.10938215E-31                  /*- Electron rest mass (in kg)-*/
 
-#define MAX_ELEMENT 118
+#define PI		3.14159265358979323846
 
+#define MAX_ELEMENT 118
 static const char *elements_label[]=
-{"X","H","HE","LI","BE","B","C","N","O","F","NE","NA","MG","AL","SI",
+{"X","H","He","LI","BE","B","C","N","O","F","NE","NA","MG","AL","SI",
 "P","S","CL","AR","K","CA","SC","TI","V","CR","MN","FE","CO","NI",
 "CU","ZN","GA","GE","AS","SE","BR","KR","RB","SR","Y","ZR","NB","MO",
 "TC","RU","RH","PD","AG","CD","IN","SN","SB","TE","I","XE","CS","BA",

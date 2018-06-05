@@ -1,0 +1,15 @@
+% this file-format is called [Heisenberg Input file].hif
+% 		, which is similiar to Gauss's <>.gjf file, but '%' stand for an annotation.
+% 		so, certainly this program support the .gjf file, but ignore the chk setting.
+% 
+% the Heisenberg program now does't set .chk file, if it would one day, the annotation sign are plan
+%		to substitute by '!'
+%
+% the bondlenth = 1.4 a.u., same with the value given in PPT of W.J. Liu
+# sp rhf/6-31g
+
+H2 (optimzed by Gauss hf/6-31g)
+
+0 1
+ H                 0.00000000    0.00000000    0.00000000
+ H                 0.74084809    0.00000000    0.00000000

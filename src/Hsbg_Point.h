@@ -1,5 +1,5 @@
-#ifndef Hsbg_Global_H
-#define Hsbg_Global_H
+#ifndef Hsbg_Point_H
+#define Hsbg_Point_H
 
 #include <iostream>
 #include <iomanip>			// IO format control
@@ -28,6 +28,11 @@ namespace Hsbg
 			this->x = 0;
 			this->y = 0;
 			this->z = 0;
+		} 
+		
+		double dist()
+		{
+			return sqrt( (this->x)*(this->x) + (this->y)*(this->y) + (this->z)*(this->z) );
 		}
 		
 		double dist_A(Point A)
@@ -48,6 +53,31 @@ namespace Hsbg
 		friend double dist_AB(Point A, Point B)
 		{
 			return sqrt( (A.x-B.x)*(A.x-B.x) + (A.y-B.y)*(A.y-B.y) + (A.z-B.z)*(A.z-B.z) );
+		}
+		
+		Point operator+(const Point& Pa)
+		{
+			Point P = Point();
+			P.x = this->x + Pa.x;
+			P.y = this->y + Pa.y;
+			P.z = this->z + Pa.z;
+			P.aname = "temp";
+			return P;
+		};
+		
+		Point operator-(const Point& Pa)
+		{
+			Point P = Point();
+			P.x = this->x - Pa.x;
+			P.y = this->y - Pa.y;
+			P.z = this->z - Pa.z;
+			P.aname = "temp";
+			return P;
+		};
+		
+		double operator*(const Point& Pa)
+		{
+			return Pa.x * this->x + Pa.y * this->y + Pa.z * this->z;
 		}
 		
 		friend ostream &operator<<( ostream &output, Point &P )
@@ -140,8 +170,7 @@ namespace Hsbg
 			return 0;
 		}
 	};
-    
-    
+
 
 };
 

@@ -5,9 +5,10 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 
 #include "Hsbg_Const.h"
-#include "Hsbg_Global.h"
+#include "Hsbg_Point.h"
 
 using namespace std;
 using namespace Hsbg;
@@ -94,6 +95,19 @@ class HOrbital
 		zz=this->z;
 		return 0;
 	}
+	
+	double normGTO( double a)
+	{
+		int n1 = 2*this->L - 1, // x-direction
+		n2 = 2*this->M - 1, 	// y-direction
+		n3 = 2*this->N - 1,		// z-direction
+		total = 1;
+		
+		for(int i = 3; i <= n1; i+=2) total *= i;
+		for(int i = 3; i <= n2; i+=2) total *= i;
+		for(int i = 3; i <= n3; i+=2) total *= i;
+		return pow(2*a/PI, 0.75) * sqrt(pow(4*a, L+M+N)/static_cast<double>(total));	
+	}
 };
 
 
@@ -124,7 +138,7 @@ class HOrbital_cgto : public HOrbital
 	
 	int get_CA(int idx, double& cc, double& aa)
 	{
-		if(idx>=this->ncgto) {cerr << "error, segment in cgto" << endl; exit(-1);}
+		if(idx>=this->cn) {cerr << "error, segment in cgto" << endl; exit(-1);}
 		cc = this->coeffs[idx];
 		aa = this->alphas[idx];
 		return 0;
@@ -140,9 +154,32 @@ class HOrbital_cgto : public HOrbital
 		return -1;
 	}
 	
+	int conv_AUnit()
+	{
+		this->x = this->x / c_bohr2ai;
+		this->y = this->y / c_bohr2ai;
+		this->z = this->z / c_bohr2ai;
+	}
+	
 	int get_BohrL()
 	{
 		return this->L + this->M + this->N;
+	}
+	
+	//double normGTO( double a); inherit from father class HOrbital 
+	
+	double normGTO(int k) 		// return k-th component gauss's norm of this contract-GTO, k from 0 count
+	{
+		if(k >= this->cn || k<0) {cerr << "error, out bounadry" << endl; exit(-1);}
+		int n1 = 2*this->L - 1, // x-direction
+		n2 = 2*this->M - 1, 	// y-direction
+		n3 = 2*this->N - 1,		// z-direction
+		total = 1;
+		
+		for(int i = 3; i <= n1; i+=2) total *= i;
+		for(int i = 3; i <= n2; i+=2) total *= i;
+		for(int i = 3; i <= n3; i+=2) total *= i;
+		return pow(2*this->alphas[k]/PI, 0.75) * sqrt(pow(4*this->alphas[k], L+M+N)/static_cast<double>(total));	
 	}
 };
 

@@ -8,7 +8,7 @@
 
 #include "Hsbg_Const.h"
 #include "Hsbg_Tools.h"
-#include "Hsbg_Global.h"
+#include "Hsbg_Point.h"
 
 using namespace std;
 using namespace Hsbg;

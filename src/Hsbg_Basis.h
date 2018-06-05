@@ -8,7 +8,7 @@
 
 #include "Hsbg_Const.h"
 #include "Hsbg_Tools.h"
-#include "Hsbg_Global.h"
+#include "Hsbg_Point.h"
 #include "Hsbg_Orbital.h"
 
 using namespace std;
@@ -136,6 +136,11 @@ class BPoint: public GPoint
     		break;
 		}
 		fin.close();
+		
+		for(int i=0; i<this->ncgto; i++)
+		{
+			this->cgto[i].set_XYZ(this->x, this->y, this->z);
+		}
 		return 0;
 	}
 	
@@ -148,7 +153,7 @@ class BPoint: public GPoint
 		input >> buff;
     	if(buff!=this->aname)
     	{
-    		cout << "error, find atom basis error" << endl;
+    		cout << "error, find atom basis error of " << buff << endl;
     		exit(-1);
     	}
     	input >> buff;
@@ -160,22 +165,33 @@ class BPoint: public GPoint
 			}
 			for(int k=0; k < this->cgto[j].cn && k<100; k++)
 			{
-				input >> this->cgto[j].coeffs[k];
 				input >> this->cgto[j].alphas[k];
+				input >> this->cgto[j].coeffs[k];
 				if(ssp!=0)
 				{
-					this->cgto[j+1].coeffs[k] = this->cgto[j].coeffs[k];
-					input >> this->cgto[j+1].alphas[k];
-					this->cgto[j+2].coeffs[k] = this->cgto[j].coeffs[k];
-					this->cgto[j+2].alphas[k] = this->cgto[j+1].alphas[k];
-					this->cgto[j+3].coeffs[k] = this->cgto[j].coeffs[k];
-					this->cgto[j+3].alphas[k] = this->cgto[j+1].alphas[k];
+					this->cgto[j+1].alphas[k] = this->cgto[j].alphas[k];
+					input >> this->cgto[j+1].coeffs[k];
+					this->cgto[j+2].alphas[k] = this->cgto[j].alphas[k];
+					this->cgto[j+2].coeffs[k] = this->cgto[j+1].coeffs[k];
+					this->cgto[j+3].alphas[k] = this->cgto[j].alphas[k];
+					this->cgto[j+3].coeffs[k] = this->cgto[j+1].coeffs[k];
 				}
 			}
 			if(j!=0) j+=ssp;
 			if(this->perd!=1)ssp=3;
 		}
 		return 0;	
+	}
+	
+	int conv_AUnit()
+	{
+		this->x = this->x / c_bohr2ai;
+		this->y = this->y / c_bohr2ai;
+		this->z = this->z / c_bohr2ai;
+		for(int i=0; i<this->ncgto; i++)
+		{
+			this->cgto[i].conv_AUnit();
+		}
 	}
 	
 	friend ostream &operator<<( ostream &output, BPoint &BP )
@@ -204,6 +220,7 @@ class BPoint: public GPoint
 			if(BP.perd!=1)ssp=3;
 			if(cnt < BP.perd) cnt++;
 		}
+		output << "the AU location is:" << endl << BP.get_Point() << endl;
 		output << endl;
 		return output;
 	}
@@ -215,6 +232,7 @@ class HBasis: public BPoint
     public:
     	string  Bname; 		// gto, sto, etc, not same with the basis
     	int  	Natom;
+    	int		Allznum;
         BPoint* basis;
         
         int*	idmap;
@@ -238,12 +256,23 @@ class HBasis: public BPoint
     	}
     }
     
+    int count_Allznum()
+    {
+    	int cnt=0;
+    	for(int i=1; i<=this->Natom; i++)
+    	{
+    		cnt+=this->basis[i].znum;
+    	}
+    	this->Allznum = cnt;
+    }
+    
     friend ostream &operator<<( ostream &output, HBasis &HB )
     {
         for(int i=1; i <= HB.Natom; i++)
         {
         	output << HB.basis[i];
         }
+        for(int i=1; i<= HB.Natom; i++) output << "idmap: " << i << " "<< HB.idmap[i] << endl;
         return output;          
     }
 };
