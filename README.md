@@ -15,7 +15,7 @@ in this directory, by command `make`, or in this child directory type `make`, yo
 # usage
 * \[ Hsbg -h \], help
 * \[ Hsbg -d \], default
-* \[Hsbg -f *.hif/*.gjf\], read from a file, here the file with the Gauss09's format (or with .hif suffixes).
+* \[Hsbg -f \*.hif/\*.gjf\], read from a file, here the file with the Gauss09's format (or with .hif suffixes).
 
 # the files structure
 ## Hsbg_Const.h, basic constant definations.  
