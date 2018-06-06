@@ -27,7 +27,7 @@ now or UHF equation. Later will add them.
 * the test of H2, is consistent with Gauss's result.  
 * the test of HeH+, is also consistent with Gauss's result.  
 * the test of H4, it have convergence problem with oscillation! It seems that it quite need DIIS to help it to
- obtain an correct result.(or to say, if there is generate orbitals in the molecule?)  
+ obtain a correct result.(or to say, if there is generate orbitals in the molecule?)  
 * the test of H, is not correct.(though we not we just diagonize the H matrix to obtain the correct result, but
  the RHF equation of closed shell is not fit it).  
 * the test of CH4, now the sp/pp V & ERI integral function is still a problem. It cannot do this job.  
@@ -45,18 +45,17 @@ new structure with few files, main cantains sixs files, and move them a copy to 
 all modeling class of Heisenberg are put into this file: 
  
 	    
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
-		!                                                                         !  
-		!		[ note: ----- inherit, ===== list, =-=-= inherit & list ]         !  
-		!                                                                         !  
-		!		Point ----- Orbital =-=-= Orbital_cgto                            !  
-		!		   `                        //                                    !  
-		!			   `                   //                                     !  
-		!			       `              //                                      !  
-		!			           `         //                                       !  
-		!			               `  Atom  =-=-=-=-= Molecule =-=-=-=-= System   !  
-		!	                                                                      !  
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  	
+		#################################################################################  
+		#                                                                               #  
+		#		[ note: ----- inherit, ===== list, =-=-= inherit & list ]       #  
+		#                                                                               #  
+		#		Point ----- Orbital =-=-= Orbital_cgto                          #  
+		#		   '                     //                                     #  
+		#			'               //                                      #  
+		#			     '         //                                       #  
+		#			         ' Atom  =-=-=-=-= Molecule =-=-=-= System      #  
+		#	                                                                        #  
+		#################################################################################  
 	    
   
 #### Hsbg_Parser.h
