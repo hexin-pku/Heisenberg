@@ -4,7 +4,7 @@
 % 
 % the Heisenberg program now does't set .chk file, if it would one day, the annotation sign are plan
 %		to substitute by '!'
-# sp hf/6-31g geom=connectivity
+# sp hf/6-311g geom=connectivity
 
 Title Card Required
 

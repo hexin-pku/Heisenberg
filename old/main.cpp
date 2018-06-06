@@ -4,8 +4,9 @@
 #include <string>
 
 #include "Hsbg_Const.h"
-#include "Hsbg_Tools.h"
-#include "Hsbg_Global.h"
+#include "Hsbg_Point.h"
+#include "Hsbg_Geom.h"
+#include "Hsbg_Basis.h"
 #include "Hsbg_Parser.h"
 #include "Hsbg_InteG.h"
 #include "Hsbg_SCF.h"
@@ -75,7 +76,6 @@ int main(int argc, char *argv[])
 	task.set_IO(hiffile, logfile);				// set IO settings
 	task.set_Job("sp","hf","3-21g"); 			// default setting, if the hiffile doesn't give settings
 	task.read_Task();							// read from *.hif file
-	
 	cout << task ;								// show detials of the task
 	HScf my_scf = HScf(task.Title);		// build an object of SCF
 	my_scf.set_Space(task);						// set SCF basisset space size

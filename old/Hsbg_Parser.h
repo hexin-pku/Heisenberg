@@ -11,7 +11,10 @@
 
 #include "Hsbg_Const.h"
 #include "Hsbg_Tools.h"
-#include "Hsbg_Global.h"
+#include "Hsbg_Point.h"
+#include "Hsbg_Geom.h"
+#include "Hsbg_Orbital.h"
+#include "Hsbg_Basis.h"
 
 using namespace std;
 using namespace Hsbg;
@@ -19,39 +22,32 @@ using namespace Hsbg;
 class HTask
 {
     public:
-    	//  IO/Sys settings
+    //  IO/Sys settings
         string  Hiffile;
         //string  Chkfile;
         string  Logfile;
         int     Maxmem;
     
-    	//  task settings
+    //  task settings
         string  Job;
         string  Method;
         string  Basis;
-        //string  others;// if needed
+        //string  others;
     
-    	//  Input content
+    //  Input content
         string  Title;
         int     Charge;
         int     Smulti;
     
-    	//  others
-        System 	Sys;
-        int     Natom;		// number of atom
-        int		Nelec;		// number of electron
-        int		Nbasis;		// number of contract basis
-    
-    /*    
-    // constructor and disconstructor
-    //HTasK();
-    HTasK(string myhiffile, string mylogfile)
-    {
-      	this->Hiffile = myhiffile;
-       	this->Logfile = mylogfile;
-    }
-    //~HTask();
-    */
+    //  others
+        HGeom   TaskGeom;
+        HBasis  TaskBasis;
+        int     Natom;
+        int		Nelec;
+        int		N_set;
+    // 
+        //HTasK();
+        //~HTask();
     
     int set_IO(string Hiffile, string logfile)
     {
@@ -68,8 +64,7 @@ class HTask
         return 0;
     }
     
-    // allocate atoms
-    int read_Predo()
+    int read_Predo() // main count the number of atoms
     {
         int cnt=0;
         string line;
@@ -90,10 +85,11 @@ class HTask
 		    cnt++;
 		}
 	    this->Natom = cnt-1;
-	    this->Sys.set_Natom(this->Natom);
+	    this->TaskGeom.Natom = cnt-1;
+	    this->TaskGeom.set_Geom(this->TaskGeom.Natom);
 	    fin.close();
-	    this->Sys.name = this->Hiffile;
-	    replace_distinct(this->Sys.name, ".gjf", "");
+	    this->TaskGeom.Gname = this->Hiffile;
+	    replace_distinct(this->TaskGeom.Gname, ".gjf", "");
 	    return 0;
     }
     
@@ -104,8 +100,7 @@ class HTask
         string buff;
 	    fstream fin;
 	    
-	    // pre-do task 
-	    this->read_Predo();
+	    this->read_Predo();             // pre-do things, relating parser of geometry
 	    fin.open(this->Hiffile.data(), ios::in);
 	    
 	    while(getline(fin,line))
@@ -144,30 +139,38 @@ class HTask
                 }
                 else
                 {
-                	this->Sys.read_Atom(line);
+                	this->TaskGeom.read_Geom(line);
                	}
 		    }
 		    else if(cnt==3)             // deal with topology, now is unused
 		    {
-		        this->Sys.solve_Top(line); 
+		        this->TaskGeom.solve_Top(line); 
 		    }
 	    }	    
 	    fin.close();
-	    
-	    // post-do task
-	    this->Sys.Bname = this->Basis;
-        this->Sys.set_Basis(this->Basis);//?
-        
-        this->Sys.conv_AUnit();
-        
-        this->Sys.set_Map();//???
-        
-        this->Sys.count_Znum();
-        
-        this->Nelec = this->Sys.znum - this->Charge;
-        this->Nbasis = this->Sys.idmap[this->Natom] + this->Sys.atoms[this->Natom].ncgto;
-        if(this->Nbasis!=this->Sys.Nbasis) { cerr << "hxhxh" << endl; exit(-1); }
+	    this->read_Postdo();
 	    return 0;
+    }
+    
+    int read_Postdo()                   // post-do things, relating parser of basis, a little complex
+    {        
+        this->TaskBasis.Bname = this->Basis;
+        this->TaskBasis.Natom = this->TaskGeom.Natom;
+        this->TaskBasis.set_Basis(this->TaskGeom.Natom);
+        
+        for(int i=1; i <= this->TaskGeom.Natom ; i++)
+        {
+        	this->TaskBasis.basis[i].setfrom_GPoint(this->TaskGeom.geom[i]);
+        	this->TaskBasis.basis[i].link_Info( this->TaskBasis.basis[i].aname ); // only BPoint with link info
+        	this->TaskBasis.basis[i].set_BPoint( this->Basis, this->TaskBasis.basis[i].aname );
+        	this->TaskBasis.basis[i].conv_AUnit();
+        }
+        this->TaskBasis.set_Map();
+        this->TaskBasis.count_Allznum();
+        this->Nelec = this->TaskBasis.Allznum - this->Charge;
+        this->N_set = this->TaskBasis.idmap[this->Natom] + this->TaskBasis.basis[this->Natom].ncgto;
+	    return 0;
+	    
     }
     
     int Taskparser(string term)
@@ -215,9 +218,8 @@ class HTask
         output << "(  Q  ,  S  )   : " << HT.Charge << ",     " << HT.Smulti << endl;
         output << "with Natom	   : " << HT.Natom << endl;
         output << "with Nelec	   : " << HT.Nelec << endl;
-        output << "with N_set	   : " << HT.Nbasis << endl << endl;
-        for(int i=1; i<=HT.Natom; i++) output << "IDmap:  " << i << "  " << HT.Sys.idmap[i] << endl; 
-        output << endl << HT.Sys << endl;
+        output << "with N_set	   : " << HT.N_set << endl;
+        output << HT.TaskGeom << endl << HT.TaskBasis << endl;
         return output;
     }
 };

@@ -11,7 +11,10 @@
 
 #include "Hsbg_Const.h"
 #include "Hsbg_Tools.h"
-#include "Hsbg_Global.h"
+#include "Hsbg_Point.h"
+#include "Hsbg_Geom.h"
+#include "Hsbg_Orbital.h"
+#include "Hsbg_Basis.h"
 #include "Hsbg_Parser.h"
 #include "Hsbg_InteG.h"
 
@@ -27,13 +30,21 @@ class HScf
 		ofstream report; 
 	public:
 		HTask* tasklink;
-		System* SYSlink;
+		HBasis* HBlink;
+		//ifstream readbs;
+		//ofstream report;
 		
 		string Scf_name;
 		int nsz;
 		int nocc ;
 		
 		double threshold;
+		//double **S;
+		//double **H;
+		//double **G;
+		//double **F;
+		//double **C;
+		//double **P;
 		
 		MatrixXd 	eigen_S;
 		MatrixXd 	eigen_H;
@@ -77,10 +88,10 @@ class HScf
 	int set_Space(HTask& HT)
 	{
 		this->tasklink = &HT;
-		this->SYSlink = &HT.Sys;
-		this->nsz = HT.Nbasis;  // wothout add 1
+		this->HBlink = &HT.TaskBasis;
+		this->nsz = HT.N_set;  // wothout add 1
 		cout << "size of the space: " << this->nsz << endl << endl;
-		
+				
 		eigen_S = MatrixXd(this->nsz, this->nsz);
 		eigen_H = MatrixXd(this->nsz, this->nsz);
 		eigen_G = MatrixXd(this->nsz, this->nsz);
@@ -104,12 +115,12 @@ class HScf
 		return 0;
 	}
 	
-	int calc_SHERI(System &SYS, MatrixXd &S, MatrixXd &H, Tensor4D &G);
+	int calc_SHERI(HBasis &HB, MatrixXd &S, MatrixXd &H, Tensor4D &G);
 	int guess_P();
 	int calc_XY();
 	int calc_Fock();
 	int calc_Cprim();
-	int tr_Cprim2C();
+	int do_Cprim2C();
 	int calc_PE();
 	int check_Loop(int cnt);
 	int report_SCF();
@@ -121,8 +132,7 @@ class HScf
 		double E_old = this->E + 10;
 		int cnt=0;
 		
-		this->report << *(this->tasklink) << endl;
-		this->calc_SHERI(this->tasklink->Sys, this->eigen_S, this->eigen_H, this->eigen_ERI);
+		this->calc_SHERI(this->tasklink->TaskBasis, this->eigen_S, this->eigen_H, this->eigen_ERI);
 		this->calc_XY();
 		this->guess_P();
 		
@@ -133,7 +143,7 @@ class HScf
 			this->report << "######################### loop " << cnt+1 << " ##########################" << endl;
 			this->calc_Fock();
 			this->calc_Cprim();
-			this->tr_Cprim2C();
+			this->do_Cprim2C();
 			this->calc_PE();
 			
 			cnt++;
@@ -146,7 +156,7 @@ class HScf
 	}
 };
 
-int HScf::calc_SHERI(System &SYS, MatrixXd &S, MatrixXd &H, Tensor4D &ERI)
+int HScf::calc_SHERI(HBasis &HB, MatrixXd &S, MatrixXd &H, Tensor4D &ERI)
 {
 	ofstream fS, fH, fERI;
 	fS.open("S.dat");
@@ -154,46 +164,81 @@ int HScf::calc_SHERI(System &SYS, MatrixXd &S, MatrixXd &H, Tensor4D &ERI)
 	fERI.open("ERI.dat");
 	
 	
-	for(int m1=0; m1<SYS.Nbasis; m1++)
+	for(int i1=1; i1<= HB.Natom; i1++)
 	{
-		for(int m2=m1; m2<SYS.Nbasis; m2++)
+		for(int j1=0; j1 < HB.basis[i1].ncgto; j1++)
 		{
-			S(m1, m2) = integral_S_sstype(SYS[m1], SYS[m2]);
-			if(m1!=m2) S(m2, m1) = S(m1, m2);
-			fS << m1 << " " << m2 << " "<< S(m1, m2) << endl << endl;
-			H(m1, m2) = integral_T_sstype( SYS[m1], SYS[m2] );
-			for(int k=1; k<= SYS.Natom; k++)
-			{
-				H(m1, m2) += integral_V_sstype(SYS[m1], SYS[m2], SYS.atoms[k]);
-			}
-			if(m1!=m2) H(m2, m1) = H(m1, m2);
-			for(int m3=0; m3<SYS.Nbasis; m3++)
-			{
-				for(int m4=m3; m4<SYS.Nbasis; m4++)
+			int m1 = HB.idmap[i1]+j1;
+
+			for(int i2=i1; i2<= HB.Natom; i2++)
+			{	
+				for(int j2=(i2==i1?j1:0); j2 < HB.basis[i2].ncgto; j2++)
 				{
-					if(m2*(m2+1)+2*m1 <= m4*(m4+1)+2*m3)
+					int m2 = HB.idmap[i2]+j2;
+
+					// Sij matrix
+					S(m1, m2) = 
+					integral_S_sstype(	HB.basis[i1].cgto[j1], HB.basis[i2].cgto[j2]);
+					// S exchange
+					if(m1!=m2) S(m2, m1) = S(m1, m2);
+					// S fout, m1 < m2
+					fS << m1 << " " << m2 << " "<< S(m1, m2) << endl << endl;		//       fout
+					
+					// Hij matrix
+					H(m1, m2) =  
+					integral_T_sstype(	HB.basis[i1].cgto[j1], HB.basis[i2].cgto[j2]);
+					for(int k=1;k<= HB.Natom;k++)
 					{
-						ERI( m1, m2, m3, m4)
-						= integral_ERI_sstype( SYS[m1], SYS[m2], SYS[m3], SYS[m4] );
-						// ERI exchange
-						ERI( m2, m1, m3, m4) = ERI( m1, m2, m3, m4);
-						ERI( m1, m2, m4, m3) = ERI( m1, m2, m3, m4);
-						ERI( m2, m1, m4, m3) = ERI( m1, m2, m3, m4);
-						ERI( m3, m4, m1, m2) = ERI( m1, m2, m3, m4);
-						ERI( m3, m4, m2, m1) = ERI( m1, m2, m3, m4);
-						ERI( m4, m3, m1, m2) = ERI( m1, m2, m3, m4);
-						ERI( m4, m3, m2, m1) = ERI( m1, m2, m3, m4);
-						// ERI fout
-						fERI << m1 << " " << m2 << " " << m3 << " " << m4 << " " <<
-							ERI(m1, m2, m3, m4) << endl << endl;		//       fout	
-					}else{
-						continue;
+						H(HB.idmap[i1]+j1, HB.idmap[i2]+j2) +=
+						integral_V_sstype(	HB.basis[i1].cgto[j1], HB.basis[i2].cgto[j2],
+											HB.basis[k]);
 					}
-				}	
+					// H exchange
+					if(m1!=m2) H(m2, m1) = H(m1, m2);
+					// H fout, m1 < m2
+					fH << m1 << " " << m2 << " "<< H(m1, m2) << endl << endl;		//       fout
+					
+					for(int i3=1; i3<= HB.Natom; i3++)
+					{
+						for(int j3=0; j3 < HB.basis[i3].ncgto; j3++)
+						{
+							int m3 = HB.idmap[i3]+j3;
+							
+							for(int i4=i3; i4<= HB.Natom; i4++)
+							{
+								for(int j4=(i4==i3?j3:0); j4 < HB.basis[i4].ncgto; j4++)
+								{
+									int m4 = HB.idmap[i4]+j4;
+									
+									// ERI matrix storage format
+									// m1<m2, m3<m4, m2*(m2+1)+m1 < m4*(m4+1)+m3
+									if(m2*(m2+1)+2*m1 <= m4*(m4+1)+2*m3)
+									{
+										ERI( m1, m2, m3, m4)
+										= integral_ERI_sstype(	HB.basis[i1].cgto[j1], HB.basis[i2].cgto[j2],
+															HB.basis[i3].cgto[j3], HB.basis[i4].cgto[j4]);
+										// ERI exchange
+										ERI( m2, m1, m3, m4) = ERI( m1, m2, m3, m4);
+										ERI( m1, m2, m4, m3) = ERI( m1, m2, m3, m4);
+										ERI( m2, m1, m4, m3) = ERI( m1, m2, m3, m4);
+										ERI( m3, m4, m1, m2) = ERI( m1, m2, m3, m4);
+										ERI( m3, m4, m2, m1) = ERI( m1, m2, m3, m4);
+										ERI( m4, m3, m1, m2) = ERI( m1, m2, m3, m4);
+										ERI( m4, m3, m2, m1) = ERI( m1, m2, m3, m4);
+										// ERI fout
+										fERI << m1 << " " << m2 << " " << m3 << " " << m4 << " " <<
+											ERI(m1, m2, m3, m4) << endl << endl;		//       fout	
+									}else{
+										continue;
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
-	
 	fS.close();
 	fH.close();
 	fERI.close();
@@ -215,7 +260,7 @@ int HScf::guess_P()
 	this->eigen_F = this->eigen_H;
 	this->eigen_Fp = this->eigen_X.transpose() * this->eigen_F * this->eigen_X;
 	this->calc_Cprim();
-	this->tr_Cprim2C();
+	this->do_Cprim2C();
 	this->calc_PE();
 	return 0;
 }
@@ -250,29 +295,51 @@ int HScf::calc_XY()
 
 int HScf::calc_Fock()
 {
-	for(int m1=0; m1 < this->SYSlink->Nbasis; m1++)
+	for(int i1=1; i1 <= this->HBlink->Natom; i1++)
 	{
-		for(int m2=0; m2 < this->SYSlink->Nbasis; m2++)
+		for(int j1=0; j1< this->HBlink->basis[i1].ncgto; j1++)
 		{
-			this->eigen_F(m1, m2) = this->eigen_H(m1, m2);
-			this->eigen_G(m1, m2) = 0;
-			this->eigen_J(m1, m2) = 0;
-			this->eigen_K(m1, m2) = 0;
-			for(int m3=0; m3 < this->SYSlink->Nbasis; m3++)
+			int m1 = this->HBlink->idmap[i1]+j1;
+			
+			for(int i2=1; i2 <= this->HBlink->Natom; i2++)
 			{
-				for(int m4=0; m4 < this->SYSlink->Nbasis; m4++)
+				for(int j2=0; j2< this->HBlink->basis[i2].ncgto; j2++)
 				{
-					this->eigen_J(m1, m2) += this->eigen_ERI(m1, m2, m3, m4)* this->eigen_P(m4, m3);
-					this->eigen_K(m1, m2) += this->eigen_ERI(m1, m4, m3, m2)* this->eigen_P(m4, m3);
-					this->eigen_G(m1, m2) += 
-							(2*this->eigen_ERI(m1, m2, m3, m4) - this->eigen_ERI(m1, m4, m3, m2) ) 
-							* this->eigen_P(m4, m3);
+					int m2 = this->HBlink->idmap[i2]+j2;
+				
+					this->eigen_F(m1, m2) = this->eigen_H(m1, m2);
+					this->eigen_G(m1, m2) = 0;
+					this->eigen_J(m1, m2) = 0;
+					this->eigen_K(m1, m2) = 0;
+					// revise
+					for(int i3=1; i3 <= this->HBlink->Natom; i3++)
+					{
+						for(int j3=0; j3< this->HBlink->basis[i3].ncgto; j3++)
+						{
+							int m3 = this->HBlink->idmap[i3]+j3;
+							
+							for(int i4=1; i4 <= this->HBlink->Natom; i4++)
+							{
+								for(int j4=0; j4< this->HBlink->basis[i4].ncgto; j4++)
+								{
+									int m4 = this->HBlink->idmap[i4]+j4;
+									
+									this->eigen_J(m1, m2) 
+													+= this->eigen_ERI(m1, m2, m3, m4)* this->eigen_P(m4, m3);
+									this->eigen_K(m1, m2) 
+													+= this->eigen_ERI(m1, m4, m3, m2)* this->eigen_P(m4, m3);
+									this->eigen_G(m1, m2) += (2* this->eigen_ERI(m1, m2, m3, m4)
+									-1* this->eigen_ERI(m1, m4, m3, m2) ) * this->eigen_P(m4, m3);
+								}
+							}
+						}
+					}
+					this->eigen_F(m1, m2) += this->eigen_G(m1, m2);
 				}
+				
 			}
-			this->eigen_F(m1, m2) += this->eigen_G(m1, m2);
 		}
 	}
-	
 	// additionally, also calculate the Fprime
 	this->eigen_Fp = this->eigen_X.transpose() * this->eigen_F * this->eigen_X;
 	
@@ -292,7 +359,7 @@ int HScf::calc_Cprim()
 	EigenSolver<MatrixXd> eig(this->eigen_Fp);
 	this->eigen_E.setZero(this->nsz);
 	
-	this->eigen_Cp = eig.eigenvectors().real();
+	this->eigen_Cp = eig.eigenvectors().real();   // only c might be complex, how to fix it?
 	this->eigen_E = eig.eigenvalues().real();
 	
 
@@ -316,7 +383,7 @@ int HScf::calc_Cprim()
 	return 0;
 }
 
-int HScf::tr_Cprim2C()
+int HScf::do_Cprim2C()
 {
 	this->eigen_C = this->eigen_X * this->eigen_Cp;
 	// for test
@@ -336,24 +403,24 @@ int HScf::tr_Cprim2C()
 
 int HScf::calc_PE()
 {	
-	for(int i1=1; i1 <= this->SYSlink->Natom; i1++)
+	for(int i1=1; i1 <= this->HBlink->Natom; i1++)
 	{
-		for(int j1=0; j1< this->SYSlink->atoms[i1].ncgto; j1++)
+		for(int j1=0; j1< this->HBlink->basis[i1].ncgto; j1++)
 		{
-			int m1 = this->SYSlink->idmap[i1]+j1;
+			int m1 = this->HBlink->idmap[i1]+j1;
 			
-			for(int i2=1; i2 <= this->SYSlink->Natom; i2++)
+			for(int i2=1; i2 <= this->HBlink->Natom; i2++)
 			{
-				for(int j2=0; j2< this->SYSlink->atoms[i2].ncgto; j2++)
+				for(int j2=0; j2< this->HBlink->basis[i2].ncgto; j2++)
 				{
-					int m2 = this->SYSlink->idmap[i2]+j2;
+					int m2 = this->HBlink->idmap[i2]+j2;
 					
 					this->eigen_P(m1, m2)=0;			
 					for(int k=0; k<this->nocc; k++)
 					{
 						this->eigen_P(m1, m2 )
 						+= 1.000 *this->eigen_C(m1, this->list[k] )
-						* this->eigen_C(m2, this->list[k] ); 
+						* this->eigen_C(m2, this->list[k] ); //?? it is right?, may be there is wrong!
 					}
 				}
 			}
@@ -388,13 +455,13 @@ int HScf::report_SCF()
 double HScf::get_NE()
 {
 	double sum=0;
-	for(int i=1;i<=this->SYSlink->Natom; i++)
+	for(int i=1;i<=this->HBlink->Natom; i++)
 	{
-		for(int j=i+1;j<=this->SYSlink->Natom; j++)
+		for(int j=i+1;j<=this->HBlink->Natom; j++)
 		{
-			sum += this->SYSlink->atoms[i].znum * this->SYSlink->atoms[j].znum 	/	sqrt(
-			(this->SYSlink->atoms[i].get_Point() - this->SYSlink->atoms[j].get_Point() )*
-			(this->SYSlink->atoms[i].get_Point() - this->SYSlink->atoms[j].get_Point() )	);
+			sum += this->HBlink->basis[i].znum * this->HBlink->basis[j].znum 	/	sqrt(
+			(this->HBlink->basis[i].get_Point() - this->HBlink->basis[j].get_Point() )*
+			(this->HBlink->basis[i].get_Point() - this->HBlink->basis[j].get_Point() )	);
 		}
 	}
 	return sum;

@@ -273,7 +273,7 @@ double integral_V_sstype(
 }
 
 
-//	needed add some general function, still not completed!
+//	needed add some general function
 /*
 double Inte_S(
 	Orbital& orb1, 
