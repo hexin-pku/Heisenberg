@@ -14,7 +14,7 @@ of Prof. W.J. Liu, CCME of Peking University.
 in the "tyro" directory with additional annotations, which can be referenced by beginers of Quantum Chemistry.  
   
 # compile
-in ./ directory, by command `make`, or in this child directory ./src type `make`. The excutable file will be 
+in ./ main directory, by command `make`, or in this child directory ./src type `make`. The executable file will be 
 generated in the ./src directory. Note your computer should be LINUX platform because the default compiler is g++.  
   
 # usage
