@@ -28,17 +28,18 @@ with the .gjf format).
 # tests and problems
 the closed shell of s type Hatree-Fock calculation is fine. But it can not treat with open shell RHF equation 
 now or UHF equation. Later will add them.  
-|test	|result						| remarks											|  
-|------ |-----: 					|:------:											|  
-| H2    | consistent with Gauss		| closed-shell RHF works well						|  
-| HeH+	| consistent with Gauss		| closed-shell RHF works well						|  
-| H		| incorrect					| open-shell RHF / UHF needed[^a] 					|  
-| CH4	| (no result)				| integration fucntion of s-p/p-p type is needed	|  
-| H4	| incorrect					| maybe convergence/degenerate problem[^b] 			|  
   
-[^a]: the test of H, is not correct.(though we not we just diagonize the H matrix to obtain the correct result, but
+	|test   |result                     | remarks                                           |  
+	|-------|---------------------------|---------------------------------------------------|  
+	| H2    | consistent with Gauss     | closed-shell RHF works well                       |  
+	| HeH+  | consistent with Gauss     | closed-shell RHF works well                       |  
+	| H     | incorrect                 | open-shell RHF / UHF needed[^]                    |  
+	| CH4   | (no result)               | integration fucntion of s-p/p-p type is needed    |  
+	| H4    | incorrect                 | maybe convergence/degenerate problem[^]           |  
+    
+[^]: the test of H, is not correct.(though we not we just diagonize the H matrix to obtain the correct result, but
  the RHF equation of closed shell is not fit to treat it. It's need open-shell RHF SCF method.)  
-[^b]: the test of H4, has convergence problem with oscillation ! It seems that it quite need DIIS to help it to
+[^]: the test of H4, has convergence problem with oscillation ! It seems that it quite need DIIS to help it to
  obtain a correct result.(or to say, if there are degenerate orbitals in the molecule? So the occupation of orbitals should be treat more carefully! P.S., according to Jahn-Teller theorem, non-linear molecule of some symmetry must be degenerate.)  
 
 
@@ -50,136 +51,136 @@ new structure with few files, mainly contains six files, and move them a copy to
 #### Hsbg_Const.h
 just as the old file structure.  
 * basic math and physics constants, mainly a copy from Pysi4 with little modification.  
-* \[static const char*\] elements_label  
-* \[static const char*\] elements_mass  
+* \[static const char*\] _elements\_label_  
+* \[static const char*\] _elements\_mass_  
 
 #### Hsbg_Tools.h
 just as the old file structure, mainly process the strings.  
-* __tempalate \<class T\> int getArrayLen(T& array)__  
-* __string& trim(string &s)__ 
-* __string& replace_recursive(string& str, const string& old_value, const string& new_value)__  
-* __string& replace_distinct(string& str, const string& old_value, const string& new_value)__  
+* _tempalate \<class T\> int getArrayLen(T& array)_  
+* _string& trim(string &s)_ 
+* _string& replace\_recursive(string& str, const string& old\_value, const string& new\_value)_  
+* _string& replace\_distinct(string& str, const string& old\_value, const string& new\_value)_  
 
 #### Hsbg_Global.h
 all modeling class of Heisenberg are put into this file:  
 here defines:
 * class Point  
-> _with members_  
-__string name__  
-__double x__  
-__double y__  
-__double z__  
-> _with methods_  
-__double norm()__  
-__double norm2()__  
-__Point ref_Point(Point& A)__  
-__double ref_norm(Point A)__  
-__double re_norm2(Point A)__  
-__friend double dist_AB(Point A, Point B)__  
-__friend double dist_AB2(Point A, Point B)__
-> _with operators_  
-__+__  
-__-__  
-__*__  
-__*__  
-__<<__  
+> __with members__  
+_string name_  
+_double x_  
+_double y_  
+_double z_  
+> __with methods__  
+_double norm()_  
+_double norm2()_  
+_Point ref\_Point(Point& A)_  
+_double ref\_norm(Point A)_  
+_double ref\_norm2(Point A)_  
+_friend double dist\_AB(Point A, Point B)_  
+_friend double dist\_AB2(Point A, Point B)_
+> __with operators__  
+_+_  
+_-_  
+_*_  
+_*_  
+_<<_  
   
 * class Orbital: inherit Point  
-> _extra members_  
-__int L__  
-__int M__  
-__int N__  
-__double alpha__  
-> _extra methods_  
-__int set_Alpha(double aa)__  
-__int set_LMN(int ll,int mm, int nn)__  
-__int set_XYZ(double xx, double yy, double zz)__  
-__int set_XYZ(Point P)__  
-__Point& get_Point()__  
-__int get_LMN(int& ll,int& mm, int& nn)__  
-__int get_XYZ(double& xx, double& yy, double& zz)__  
-__int conv_AUnit()__  
-__double normGTO()__  
-__double normGTO( double a)__  
-> _with operators_  
+> __extra members__  
+_int L_  
+_int M_  
+_int N_  
+_double alpha_  
+> __extra methods__  
+_int set\_Alpha(double aa)_  
+_int set\_LMN(int ll,int mm, int nn)_  
+_int set\_XYZ(double xx, double yy, double zz)_  
+_int set\_XYZ(Point P)_  
+_Point& get\_Point()_  
+_int get\_LMN(int& ll,int& mm, int& nn)_  
+_int get\_XYZ(double& xx, double& yy, double& zz)_  
+_int conv\_AUnit()_  
+_double normGTO()_  
+_double normGTO( double a)_  
+> __with operators__  
 
 * class Orbital_cgto: inherit from Orbital  
-> _extra members_  
-__int cn__  
+> __extra members__  
+_int cn_  
 the number of (Gauss) Orbital in this contracted GTO.  
-__int* coeffs__  
+_int* coeffs_  
 list of coefficients.  
-__int* alphas__  
+_int* alphas_  
 list of exponents.(to be abandoned)  
-__Orbital* gtos__  
+_Orbital* gtos_  
 list of Orbital objects.  
-> _extra/overload methods_  
-__int set_Cgto(int num)__  
-__int get_CA(int idx, double& cc, double& aa)__  
-__int set_LMN(int ll,int mm, int nn)__  
-__int set_XYZ(double xx, double yy, double zz)__  
-__int set_XYZ(Point P)__  
-__int conv_AUnit()__  
-__int get_BohrL()__  
-__double normGTO(int k)__  
-> _with operators_  
+> __extra/overload methods__  
+_int set\_Cgto(int num)_  
+_int get\_CA(int idx, double& cc, double& aa)_  
+_int set\_LMN(int ll,int mm, int nn)_  
+_int set\_XYZ(double xx, double yy, double zz)_  
+_int set\_XYZ(Point P)_  
+_int conv\_AUnit()_  
+_int get\_BohrL()_  
+_double normGTO(int k)_  
+> __with operators__  
 
 * class Atom: inherit from Point  
-> _extra members_  
-__int znum__   
+> __extra members__  
+_int znum_   
 z-number of the atom.  
-__double mass__  
+_double mass_  
 the mass of atom (1mol C12 = 12g).  
-__int perd__  
-__int fmly__  
-__int indx__  
-__int frag__  
-__int ncgto__  
-__Orbital_cgto* cgto__  
-> _with methods_  
-__Point& get_Point()__
-__int get_Point(Point& P)__  
-__int read_Atom(string line)__  
-__int link_Info(string my_name)__  
-__int set_Basis(string my_bname, int mysplit, int mynumcs[], int myidxcs[])__  
-__int set_Basisspace(int split, int numcs[], int idxcs[])__  
-__int read_Basis( fstream& input)__  
-__int conv_AUnit()__  
-> _with operators_  
-__<<__  
+_int perd_  
+_int fmly_  
+_int indx_  
+_int frag_  
+_int ncgto_  
+_Orbital\_cgto* cgto_  
+> __with methods__  
+_Point& get\_Point()_
+_int get\_Point(Point& P)_  
+_int read\_Atom(string line)_  
+_int link\_Info(string my__name)_  
+_int set\_Basis(string my__bname, int mysplit, int mynumcs[], int myidxcs[])_  
+_int set\_Basisspace(int split, int numcs[], int idxcs[])_  
+_int read\_Basis( fstream& input)_  
+_int conv\_AUnit()_  
+> __with operators__  
+_<<_  
 
 * class Molecule: inherit from Atom  
-> _extra members_  
-__int Natom__  
-__int iatom__  
-__Atom* atoms__  
-> _extra methods_  
+> __extra members__  
+_int Natom_  
+_int iatom_  
+_Atom* atoms_  
+> __extra methods__  
 (none)  
-> _with operators_  
+> __with operators__  
 (none)  
 * class System: inherit from Molecule  
-> _extra members_  
-__int Nmol__  
-__int imol__  
-__Molecule moles__  
-__string Bname__  
-__int Nbasis__  
-__int split__  
-__int* numcs__  
-__int* idxcs__  
-__int* idmap__  
-> _extra/overload methods_  
-__int set_Natom(int num)__  
-__int read_Atom(string line)__  
-__int set_Basis(string my_bname)__  
-__int set_Map()__  
-__Orbital_cgto& OrbC(int &idx)__  
-__int count_Znum()__  
-__int conv_AUnit()__  
-__int solve_Top(string line)__  
-> _with operators_  
-__<<__
-__\[\]__
+> __extra members__  
+_int Nmol_  
+_int imol_  
+_Molecule moles_  
+_string Bname_  
+_int Nbasis_  
+_int split_  
+_int* numcs_  
+_int* idxcs_  
+_int* idmap_  
+> __extra/overload methods__  
+_int set\_Natom(int num)_  
+_int read\_Atom(string line)_  
+_int set\_Basis(string my\_bname)_  
+_int set\_Map()_  
+_Orbital\_cgto& OrbC(int &idx)_  
+_int count\_Znum()_  
+_int conv\_AUnit()_  
+_int solve\_Top(string line)_  
+> __with operators__  
+_<<_
+_\[\]_
   
 	    
 		#################################################################################  
@@ -187,7 +188,7 @@ __\[\]__
 		#       [ note: ----- inherit, ===== list, =-=-= inherit & list ]               #  
 		#                                                                               #  
 		#       Point ----- Orbital =-=-= Orbital_cgto                                  #  
-		#		   '                     //                                             #  
+		#          '                     //                                             #  
 		#               '               //                                              #  
 		#                    '         //                                               #  
 		#                         ' Atom  =-=-=-=-= Molecule =-=-=-= System             #  
@@ -198,201 +199,135 @@ __\[\]__
 #### Hsbg_Parser.h
 a parser of reading input file.  
 * HTask class:  
-> _with members_  
-__string Hiffile__  
+> __with members__  
+_string Hiffile_  
 location and name of input file.  
-__string Logfile__  
+_string Logfile_  
 location and name of output file.  
-__int Maxmem__  
+_int Maxmem_  
 max memory to be used (not used for now).  
-__string Job__  
+_string Job_  
 type of job (now only support sp; scan, opt, freq, qm/mm are not supported now).  
-__string Method__  
+_string Method_  
 type of method (now only support closed-shell RHF SCF; 
 open-shell RHF, UHF, DFT, MP2, CISD, CCSD are not supported now).  
-__string Basis__  
+_string Basis_  
 type of basis, such as 6-31g (should be lowercase! later will add a convector).  
-__string Title__ 
+_string Title_ 
 title, optional.    
-__int Charge__  
+_int Charge_  
 charge of system.  
-__int Smulti__  
+_int Smulti_  
 spin-multiplicity of system.  
-__System Sys__  
+_System Sys_  
 object of system.  
-__int Natom__  
+_int Natom_  
 total atoms of system.  
-__int Nelec__
+_int Nelec_
 total electrons of system.  
-__int Nbasis__
+_int Nbasis_
 total (contracted) orbital of system.  
   
-> _with methods_  
-__int set_IO(string Hiffile, string logfile)__  
+> __with methods__  
+_int set\_IO(string Hiffile, string logfile)_  
 setup input file and ouput file.  
-__int set_Job(string job, string method, string basis)__  
+_int set\_Job(string job, string method, string basis)_  
 setup job, methed and basis for the task.  
-__int read_Predo()__  
+_int read\_Predo()_  
 pre-read the input file and determine the atom number of the system.  
-__int read_Task()__  
+_int read\_Task()_  
 read each line of input file, and do analyzation.  
-__int Taskparser(string term)__  
+_int Taskparser(string term)_  
 a function analyize a line-string, is the job parser!  
 
-> _with overload operator_  
-__<<__. 
+> __with overload operator__  
+_<<_. 
 
 #### Hsbg_InteG.h  
 the integration function. new type of s-p/p-p integration method add in the annotation block (the V & ERI of
 them are still not compleled. next only list the completed functions:)  
-> _with function_  
-__double integral_S(Orbital_cgto& cgto1,  Orbital_cgto& cgto2)__  
-__double integral_ERI(  Orbital_cgto& cgto1, Orbital_cgto& cgto2, Orbital_cgto& cgto3, Orbital_cgto& cgto4)__  
-__double integral_T(  Orbital_cgto& cgto1,  Orbital_cgto& cgto2)__  
-__double integral_V( 	Orbital_cgto& cgto1,  Orbital_cgto& cgto2, Atom& P )__  
-__double integral_S_sstype(Orbital_cgto& cgto1,  Orbital_cgto& cgto2)__  
-__double integral_ERI_sstype(  Orbital_cgto& cgto1, Orbital_cgto& cgto2, Orbital_cgto& cgto3, Orbital_cgto& cgto4)__  
-__double integral_T_sstype(  Orbital_cgto& cgto1,  Orbital_cgto& cgto2)__  
-__double integral_V_sstype( 	Orbital_cgto& cgto1,  Orbital_cgto& cgto2, Atom& P )__  
+> __with function__  
+_double integral\_S(Orbital\_cgto& cgto1,  Orbital\_cgto& cgto2)_  
+_double integral\_ERI(  Orbital\_cgto& cgto1, Orbital\_cgto& cgto2, Orbital\_cgto& cgto3, Orbital\_cgto& cgto4)_  
+_double integral\_T(  Orbital\_cgto& cgto1,  Orbital\_cgto& cgto2)_  
+_double integral\_V( 	Orbital\_cgto& cgto1,  Orbital\_cgto& cgto2, Atom& P )_  
+_double integral\_S\_sstype(Orbital\_cgto& cgto1,  Orbital\_cgto& cgto2)_  
+_double integral\_ERI\_sstype(  Orbital\_cgto& cgto1, Orbital\_cgto& cgto2, Orbital\_cgto& cgto3, Orbital\_cgto& cgto4)_  
+_double integral\_T\_sstype(  Orbital\_cgto& cgto1,  Orbital\_cgto& cgto2)_  
+_double integral\_V\_sstype( 	Orbital\_cgto& cgto1,  Orbital\_cgto& cgto2, Atom& P )_  
 
 #### Hsbg_SCF.h
 the self-consistent field iteration procedure.  
 * class HScf  
-> _with members_
-__ofstream report__   
-__HTask* tasklink__  
-__System* SYSlink__  
-__string Scf_name__  
-__int nsz__  
-__int nocc__  
-__double threshold__  
-__MatrixXd 	eigen_S__  
-__MatrixXd 	eigen_H__  
-__MatrixXd	eigen_G__  
-__MatrixXd	eigen_J__  
-__MatrixXd	eigen_K__  
-__Tensor4D	eigen_ERI__  
-__MatrixXd	eigen_F__  
-__MatrixXd 	eigen_C__  
-__MatrixXd 	eigen_P__  
-__MatrixXd	eigen_X__  
-__MatrixXd	eigen_Y__  
-__MatrixXd	eigen_Fp__  
-__MatrixXd	eigen_Cp__  
-__bool		do_loop__  
-__VectorXd	eigen_E__  
-__double		E__  
-__double		E_old__  
-__MatrixXd	eigen_P_old__  
-__int* 		list__  
-> _with methods_  
-__int set_Threshold(double myeps)__  
-__int set_Space(HTask& HT)__  
+> __with members__
+_ofstream report_   
+_HTask* tasklink_  
+_System* SYSlink_  
+_string Scf\_name_  
+_int nsz_  
+_int nocc_  
+_double threshold_  
+_MatrixXd 	eigen\_S_  
+_MatrixXd 	eigen\_H_  
+_MatrixXd	eigen\_G_  
+_MatrixXd	eigen\_J_  
+_MatrixXd	eigen\_K_  
+_Tensor4D	eigen\_ERI_  
+_MatrixXd	eigen\_F_  
+_MatrixXd 	eigen\_C_  
+_MatrixXd 	eigen\_P_  
+_MatrixXd	eigen\_X_  
+_MatrixXd	eigen\_Y_  
+_MatrixXd	eigen\_Fp_  
+_MatrixXd	eigen\_Cp_  
+_bool		do\_loop_  
+_VectorXd	eigen\_E_  
+_double		E_  
+_double		E\_old_  
+_MatrixXd	eigen\_P\_old_  
+_int* 		list_  
+> __with methods__  
+_int set\_Threshold(double myeps)_  
+_int set\_Space(HTask& HT)_  
 allocate the matrix size.  
-__int calc_SHERI(System &SYS, MatrixXd &S, MatrixXd &H, Tensor4D &G)__  
+_int calc\_SHERI(System &SYS, MatrixXd &S, MatrixXd &H, Tensor4D &G)_  
 calculate the H, S, ERI integrations.  
-__int guess_P()__  
+_int guess\_P()_  
 guess P (density matrix) by a pre-SCF using H as F (Fock Matrix) directly.  
-__int calc_XY()__  
+_int calc\_XY()_  
 calculate the transform matrix, X=S^(-1/2), Y=S^(1/2).  
-__int calc_Fock()__  
+_int calc\_Fock()_  
 calculate Fock matrix from H, ERI and P (density) matrix. By the way, calculate F'=X`*F*X .  
-__int calc_Cprim()__  
+_int calc\_Cprim()_  
 calculate the solution of F'C'= e C' .   
-__int tr_Cprim2C()__  
+_int tr\_Cprim2C()_  
 from C' calculate C, by C=X*C' .  
-__int calc_PE()__  
+_int calc\_PE()_  
 from C, calculate P, then from P and eigenvalues of F' calculate E (and add nuclues exclusion energy!).  
-__int check_Loop(int cnt)__  
+_int check\_Loop(int cnt)_  
 check if it is consistent with itself. (SCF)  
-__int report_SCF()__  
+_int report\_SCF()_  
 print the SCF information.  
-__double get_NE()__  
+_double get\_NE()_  
 calculate nuclues exclusion energy.  
-__double m_Diff(MatrixXd &M, MatrixXd &N)__  
+_double m\_Diff(MatrixXd &M, MatrixXd &N)_  
 give a kind of norm of matrix. (the elements with max absolution).  
-__int loop_SCF()__  
+_int loop\_SCF()_  
 control total SCF cycles.  
  
 ### Old files structure ( to be adandoned )!
-###### Hsbg_Const.h, basic constant definations.  
-* basic math/physics constant
-* unit conversion constant
-* elements label
-* elements mass
-if necessary, you can revise here to define your type of "atoms"
-  
-###### Hsbg_Tools.h, some useful functions
-(mainly string processing function) without in original c++.
-* \[ getArrayLen \], template getting length of an array.
-* \[ trim \], trim a string.
-* \[ replace_recursive \], a replace method of string, not recommend for it is recursive
-* \[ replace_distinct \], a replace method of string, not recursive. 
-  
-###### Hsbg_Point.h
-define the namespace __Hsbg__, where defines __Point__, __GPoint__ basic classes.
-* Point class:  
-with members __x__, __y__, __z__, __aname__(the atom name);  
-with methods __dist__, __dist\_A__, __dist\_A2__, __dist\_AB__, __dist\_AB2__(though most of them are not used);  
-with overload operators __\+__, __\-__, __\*__, __>>__.  
-* GPoint class: is a child class of Point (inherit from Point).  
-with addtional data __znum__, __mass__, __perd__, __fmly__, __indx__, __frag__.  
-with addtional methods __get\_Point__(return Point object, polymorphism), __link\_info__(complete the atom information).
-  
-###### Hsbg_Geom.h
-* HGeom class: inherit from GPoint. It is a list of GPoint.  
-with menbers __Gname__, __Natom__, __Nfrag__, __iatom__, __ifrag__, __geom__(pointer as list of GPoint).  
-with method __set\_Geom__, __read\_Geom__.  
-with overload operator __<<__.  
-  
-###### Hsbg_Orbital.h
-* HOrbital class:  
-basis orbital class, can be use as GTO/STO.  
-with members __x__, __y__, __z__, __alpha__, __coeff__, __L__, __M__, __N__.(note it not inherit from Point)  
-with methhods __init\_Orbit__, __set\_CA__, __get\_CA__, __set\_LMN__, __get\_LMN__, __set\_XYZ__, __get\_XYZ__,
- __get\_Point__(return a Point object), __normGTO__.
-* HOrbital_cgto class:  
-contract GTO, inherit from HOrbital class.  
-with additional members __cn__, __alphas__(list), __coeffs__(list), __orbits__(abandoned!).  
-with additional methods __set\_cgto__, __get\_CA__(overload), __set\_Pars__, __get\_BohrL__, __conv\_AUnit__,
- __normGTO__(overload).    
-  
-###### Hsbg_Basis.h
-* BPoint class:  
-inherit from GPoint  
-with additional menbers __ncgto__, __split__, __numcs__, __idxcs__.
-with additional methods __setfrom\_GPoint__, __set\_Space__, __set\_BPoint__, __read\_BPoint__, __conv\_AUint__.  
-with overload operator __<<__.
-* HBasis class:
-inherit from BPoint, use as a "list" of BPoint.  
-with additional menbers __Bname__, __Natom__, __Allzum__, __basis__(pointer of BPoint), __idmap__(pointer of int).  
-with additional methods __set\_Basis__, __set\_Map__, __count\_Allzum__.  
-with overload operator __<<__.  
-  
-###### Hsbg_Parser.h
-HTask class:  
-with members __Hiffile__, __Logfile__, __Maxmem__, __Job__, __Method__, __Basis__, __Title__, __Charge__, __Smulti__,
- __TaskGeom__(HGeom object), __TaskBasis__(Hbasis object), __Natom__, __Nelec__, __N\_set__.  
-with methods __set\_IO__, __set\_Job__, __read\_Predo__, __read\_Task__, __read\_Postdo__, __Taskparser__.  
-with overload operator __<<__.  
-  
-###### Hsbg_InteG.h/(Hsbg_InteS.h)
-for the integral of Gauss function or Slater function (the former only supports ss type, and the latter is 
-not completed).  
-  
-###### Hsbg_SCF.h
-HScf class:  
-the solver of self-consistent field.  
-with members (pointer)__tasklink__, __HBlink__, __Scf\_name__, __nsz__, __nocc__, __threshold__, __eigen\_S__, 
-__eigen\_H__, __eigen\_ERI__, __eigen\_J__, __eigen\_K__, __eigen\_G__, __eigen\_F__, __eigen\_C__, 
-__eigen\_E__, __eigen\_Fp__, __eigen\_Cp__, __eigen\_X__, __eigen\_Y__, __eigen\_P__, __eigen\_P\_old__, 
-__E__, __E\_old__, __do\_loop__, __list__.    
-with methods __set\_Threshold__, __set\_Space__, __clac\_SHEERI__, __guess\_P__, __calc\_XY__, __calc\_Fock__, 
-__calc\_Cprim__, __calc\_PE__, __check\_loop__, __report\_SCF__, __calc_NE__, __m\_Diff__.  
-  
+##### Hsbg_Const.h, basic constant definations.  
+##### Hsbg_Tools.h, some useful functions 
+##### Hsbg_Point.h  
+##### Hsbg_Geom.h 
+##### Hsbg_Orbital.h 
+##### Hsbg_Basis.h
+##### Hsbg_Parser.h 
+##### Hsbg_InteG.h/(Hsbg_InteS.h)
+##### Hsbg_SCF.h 
   
 # the process of the procedure
-1. __main__ read the arguments, pass to Parser(or Tasker).  
+1. _main_ read the arguments, pass to Parser(or Tasker).  
 2. Parser preread the file, determine how many atoms it contains. And pass to creat object.  
 3. Parser read file, initialize task and system parameters.  
 4. Parser postread and deal with the modeling, Creat System/Atom object, and init basis with coefficients 
