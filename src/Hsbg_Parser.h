@@ -156,17 +156,13 @@ class HTask
 	    
 	    // post-do task
 	    this->Sys.Bname = this->Basis;
-        this->Sys.set_Basis(this->Basis);//?
-        
+        this->Sys.set_Basis(this->Basis);
         this->Sys.conv_AUnit();
-        
-        this->Sys.set_Map();//???
-        
+        this->Sys.set_Map();
         this->Sys.count_Znum();
-        
         this->Nelec = this->Sys.znum - this->Charge;
         this->Nbasis = this->Sys.idmap[this->Natom] + this->Sys.atoms[this->Natom].ncgto;
-        if(this->Nbasis!=this->Sys.Nbasis) { cerr << "hxhxh" << endl; exit(-1); }
+        if(this->Nbasis!=this->Sys.Nbasis) { cerr << "Nbasis count error!" << endl; exit(-1); }
 	    return 0;
     }
     

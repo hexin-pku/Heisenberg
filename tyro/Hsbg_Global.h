@@ -228,7 +228,21 @@ namespace Hsbg
 			this->z = this->z / c_bohr2ai;
 			return 0;
 		}
-	
+		
+		double normGTO()
+		{
+			int n1 = 2*this->L - 1, // x-direction
+			n2 = 2*this->M - 1, 	// y-direction
+			n3 = 2*this->N - 1,		// z-direction
+			total = 1;
+		
+			for(int i = 3; i <= n1; i+=2) total *= i;
+			for(int i = 3; i <= n2; i+=2) total *= i;
+			for(int i = 3; i <= n3; i+=2) total *= i;
+			return pow(2*this->alpha/PI, 0.75) 
+				* sqrt(pow(4*this->alpha, this->L+this->M+this->N)/static_cast<double>(total));	
+		}
+		
 		double normGTO( double a)
 		{
 			int n1 = 2*this->L - 1, // x-direction
@@ -239,7 +253,7 @@ namespace Hsbg
 			for(int i = 3; i <= n1; i+=2) total *= i;
 			for(int i = 3; i <= n2; i+=2) total *= i;
 			for(int i = 3; i <= n3; i+=2) total *= i;
-			return pow(2*a/PI, 0.75) * sqrt(pow(4*a, L+M+N)/static_cast<double>(total));	
+			return pow(2*a/PI, 0.75) * sqrt(pow(4*a, this->L+this->M+this->N)/static_cast<double>(total));	
 		}
 	};
 
@@ -468,7 +482,7 @@ namespace Hsbg
 		}
 	   	
 		// total arrangment of setting atoms with basis-list
-		int	set_Basis(string my_bname, int mysplit, int mynumcs[], int myidxcs[])
+		int set_Basis(string my_bname, int mysplit, int mynumcs[], int myidxcs[])
 		{
 			// set Basis space
 			this->set_Basisspace(mysplit, mynumcs, myidxcs);
