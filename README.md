@@ -2,7 +2,7 @@
 Simple chemistry quantum computation (SCF), named after Heisenberg, version-0.1  
   
 > (when you see it's 0.0 version, means it still not correct. However, now it's 0.1 version, that means it lacks
-some functions)  
+some functions. Date 2018.06.07)  
   
 > Author, XShinHe (He Xin) <1500011805@pku.edu.cn>  
   
@@ -77,7 +77,7 @@ _Point ref\_Point(Point& A)_
 _double ref\_norm(Point A)_  
 _double ref\_norm2(Point A)_  
 _friend double dist\_AB(Point A, Point B)_  
-_friend double dist\_AB2(Point A, Point B)_
+_friend double dist\_AB2(Point A, Point B)_  
 > __with operators__  
 _+_  
 _-_  
@@ -107,13 +107,13 @@ _double normGTO( double a)_
 * class Orbital_cgto: inherit from Orbital  
 > __extra members__  
 _int cn_  
-the number of (Gauss) Orbital in this contracted GTO.  
+: the number of (Gauss) Orbital in this contracted GTO.  
 _int* coeffs_  
-list of coefficients.  
+: list of coefficients.  
 _int* alphas_  
-list of exponents.(to be abandoned)  
+: list of exponents.(to be abandoned)  
 _Orbital* gtos_  
-list of Orbital objects.  
+: list of Orbital objects.  
 > __extra/overload methods__  
 _int set\_Cgto(int num)_  
 _int get\_CA(int idx, double& cc, double& aa)_  
@@ -128,9 +128,9 @@ _double normGTO(int k)_
 * class Atom: inherit from Point  
 > __extra members__  
 _int znum_   
-z-number of the atom.  
+: z-number of the atom.  
 _double mass_  
-the mass of atom (1mol C12 = 12g).  
+: the mass of atom (1mol C12 = 12g).  
 _int perd_  
 _int fmly_  
 _int indx_  
@@ -201,44 +201,44 @@ a parser of reading input file.
 * HTask class:  
 > __with members__  
 _string Hiffile_  
-location and name of input file.  
+: location and name of input file.  
 _string Logfile_  
-location and name of output file.  
+: location and name of output file.  
 _int Maxmem_  
-max memory to be used (not used for now).  
+: max memory to be used (not used for now).  
 _string Job_  
-type of job (now only support sp; scan, opt, freq, qm/mm are not supported now).  
+: type of job (now only support sp; scan, opt, freq, qm/mm are not supported now).  
 _string Method_  
-type of method (now only support closed-shell RHF SCF; 
+: type of method (now only support closed-shell RHF SCF; 
 open-shell RHF, UHF, DFT, MP2, CISD, CCSD are not supported now).  
 _string Basis_  
-type of basis, such as 6-31g (should be lowercase! later will add a convector).  
+: type of basis, such as 6-31g (should be lowercase! later will add a convector).  
 _string Title_ 
-title, optional.    
+: title, optional.    
 _int Charge_  
-charge of system.  
+: charge of system.  
 _int Smulti_  
-spin-multiplicity of system.  
+: spin-multiplicity of system.  
 _System Sys_  
-object of system.  
+: object of system.  
 _int Natom_  
-total atoms of system.  
+: total atoms of system.  
 _int Nelec_
-total electrons of system.  
+: total electrons of system.  
 _int Nbasis_
-total (contracted) orbital of system.  
+: total (contracted) orbital of system.  
   
 > __with methods__  
 _int set\_IO(string Hiffile, string logfile)_  
-setup input file and ouput file.  
+: setup input file and ouput file.  
 _int set\_Job(string job, string method, string basis)_  
-setup job, methed and basis for the task.  
+: setup job, methed and basis for the task.  
 _int read\_Predo()_  
-pre-read the input file and determine the atom number of the system.  
+: pre-read the input file and determine the atom number of the system.  
 _int read\_Task()_  
-read each line of input file, and do analyzation.  
+: read each line of input file, and do analyzation.  
 _int Taskparser(string term)_  
-a function analyize a line-string, is the job parser!  
+: a function analyize a line-string, is the job parser!  
 
 > __with overload operator__  
 _<<_. 
@@ -289,31 +289,31 @@ _int* 		list_
 > __with methods__  
 _int set\_Threshold(double myeps)_  
 _int set\_Space(HTask& HT)_  
-allocate the matrix size.  
+: allocate the matrix size.  
 _int calc\_SHERI(System &SYS, MatrixXd &S, MatrixXd &H, Tensor4D &G)_  
-calculate the H, S, ERI integrations.  
+: calculate the H, S, ERI integrations.  
 _int guess\_P()_  
-guess P (density matrix) by a pre-SCF using H as F (Fock Matrix) directly.  
+: guess P (density matrix) by a pre-SCF using H as F (Fock Matrix) directly.  
 _int calc\_XY()_  
-calculate the transform matrix, X=S^(-1/2), Y=S^(1/2).  
+: calculate the transform matrix, X=S^(-1/2), Y=S^(1/2).  
 _int calc\_Fock()_  
-calculate Fock matrix from H, ERI and P (density) matrix. By the way, calculate F'=X`*F*X .  
+: calculate Fock matrix from H, ERI and P (density) matrix. By the way, calculate F'=X\`*F*X .  
 _int calc\_Cprim()_  
-calculate the solution of F'C'= e C' .   
+:calculate the solution of F'C'= e C' .   
 _int tr\_Cprim2C()_  
-from C' calculate C, by C=X*C' .  
+: from C' calculate C, by C=X*C' .  
 _int calc\_PE()_  
-from C, calculate P, then from P and eigenvalues of F' calculate E (and add nuclues exclusion energy!).  
+: from C, calculate P, then from P and eigenvalues of F' calculate E (and add nuclues exclusion energy!).  
 _int check\_Loop(int cnt)_  
-check if it is consistent with itself. (SCF)  
+: check if it is consistent with itself. (SCF)  
 _int report\_SCF()_  
-print the SCF information.  
+: print the SCF information.  
 _double get\_NE()_  
-calculate nuclues exclusion energy.  
+: calculate nuclues exclusion energy.  
 _double m\_Diff(MatrixXd &M, MatrixXd &N)_  
-give a kind of norm of matrix. (the elements with max absolution).  
+: give a kind of norm of matrix. (the elements with max absolution).  
 _int loop\_SCF()_  
-control total SCF cycles.  
+: control total SCF cycles.  
  
 ### Old files structure ( to be adandoned )!
 ##### Hsbg_Const.h, basic constant definations.  
@@ -344,5 +344,3 @@ and exponents.
   
 # Acknowledgement 
 to Prof. W.J. Liu,  and my teammates in the Quantum Chemistry class.  
-
-
