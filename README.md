@@ -1,7 +1,7 @@
 # Heisenberg
-Simple chemistry quantum computation (SCF), version-0.1  
+Simple chemistry quantum computation (SCF), named after Heisenberg, version-0.1  
   
-> (when you see it's 0.0 version, means it still not correct. However, its 0.1 version, meaning that it lacks
+> (when you see it's 0.0 version, means it still not correct. However, now it's 0.1 version, that means it lacks
 some functions)  
   
 > Author, XShinHe (He Xin) <1500011805@pku.edu.cn>  
@@ -10,40 +10,57 @@ some functions)
 project of Utenaq; this program is first plan to as the programming work for the Quantum Chemistry lecture, 
 of Prof. W.J. Liu, CCME of Peking University.  
 
-> After the hand in the programmimg work for the QC class, the former basic Hatree Fock method would be put 
+> After the handing in the programmimg work for the QC class, the basic Hatree Fock method (closed-RHF) would be put 
 in the "tyro" directory with additional annotations, which can be referenced by beginers of Quantum Chemistry.  
   
 # compile
 in this directory, by command `make`, or in this child directory type `make`, your computer should be LINUX platform.
   
 # usage
-* \[ Hsbg -h \], help
-* \[ Hsbg -d \], default
-* \[Hsbg -f \*.hif/\*.gjf\], read from a file, here the file with the Gauss09's format (or with .hif suffixes).
+* \[ Hsbg -h \], help information
+* \[ Hsbg -d \], default, calculate HeH+ example by default.
+* \[Hsbg -f \*.hif/\*.gjf\], read from a file, here the file with the Gauss09's format (or with .hif suffixes, it's similiar 
+with the .gjf format).  
 
 # test
 the closed shell of s type Hatree-Fock calculation is fine. But it can not treat with open shell RHF equation 
 now or UHF equation. Later will add them.  
 * the test of H2, is consistent with Gauss's result.  
 * the test of HeH+, is also consistent with Gauss's result.  
-* the test of H4, it have convergence problem with oscillation! It seems that it quite need DIIS to help it to
- obtain a correct result.(or to say, if there is generate orbitals in the molecule?)  
+* the test of H4, has convergence problem with oscillation ! It seems that it quite need DIIS to help it to
+ obtain a correct result.(or to say, if there are degenerate orbitals in the molecule? So the occupation of orbitals should be treat more carefully! P.S., according to Jahn-Teller theorem, non-linear molecule of some symmetry must be degenerate.)  
 * the test of H, is not correct.(though we not we just diagonize the H matrix to obtain the correct result, but
- the RHF equation of closed shell is not fit it).  
-* the test of CH4, now the sp/pp V & ERI integral function is still a problem. It cannot do this job.  
+ the RHF equation of closed shell is not fit to treat it. It's need open-shell RHF SCF method.)  
+* the test of CH4, now the sp/pp V & ERI integral function is still a problem. It cannot do this job, but later will add.  
 
   
 # files structure
 ## new structure (now updating)
-new structure with few files, main cantains sixs files, and move them a copy to tyro directory now. From them,
- it's easy to understand how this procedure works!  
+new structure with few files, mainly contains six files, and move them a copy to tyro directory now. From them,
+ it's easy to understand how does this procedure work!  
 #### Hsbg_Const.h
-* just as the old file structure.  
+just as the old file structure.  
+* basic math and physics constants, mainly a copy from Pysi4 with little modification.  
+* \[static const char*\] elements_label  
+* \[static const char*\] elements_mass  
+
 #### Hsbg_Tools.h
-* just as the old file structure.
+just as the old file structure.  
+* \[tempalate\<class T\> int\] getArrayLen(T& array)  
+* \[string&\] trim(string &s)  
+* \[string&\] replace_recursive(string& str, const string& old_value, const string& new_value)  
+* \[string&\] replace_distinct(string& str, const string& old_value, const string& new_value)  
+
 #### Hsbg_Global.h
-all modeling class of Heisenberg are put into this file: 
- 
+all modeling class of Heisenberg are put into this file:  
+here defines:
+* class Point
+* class Orbital
+* class Orbital_cgto
+* class Atom
+* class Molecule
+* class System
+  
 	    
 		#################################################################################  
 		#                                                                               #  
@@ -60,6 +77,30 @@ all modeling class of Heisenberg are put into this file:
   
 #### Hsbg_Parser.h
 a parser of reading input file.  
+* HTask class:  
+> with members  
+\[string\] __Hiffile__, location and name of input file.  
+\[string\] __Logfile__, location and name of output file.  
+__Maxmem__, \[int\], max memory to be used (not used for now).  
+__Job__, \[string\], type of job (now only support sp; scan, opt, freq, qm/mm are not supported now).  
+__Method__, \[string\], type of method (now only support closed-shell RHF SCF; open-shell RHF, UHF, DFT, MP2, CISD, CCSD are not supported now).  
+__Basis__, \[string\], type of basis, such as 6-31g (should be lowercase! later will add a convector).  
+__Title__, \[string\], title.    
+__Charge__, \[int\], charge of system.  
+__Smulti__, \[int\], spin-multiplicity of system.  
+__Sys__, \[System\], object of system.  
+__Natom__, \[int\], total atoms of system.  
+__Nelec__, \[int\], total electrons of system.  
+__Nbasis__, \[int\], total (contracted) orbital of system.  
+  
+> with methods  
+__set\_IO__,  
+__set\_Job__, 
+__read\_Predo__, 
+__read\_Task__, 
+__Taskparser__.  
+with overload operator __<<__. 
+
 #### Hsbg_InteG.h  
 the integration function. new type of s-p/p-p integration method add in the annotation block (the V & ERI of
 them are still not compleled.)  
