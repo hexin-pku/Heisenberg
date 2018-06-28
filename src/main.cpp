@@ -6,8 +6,8 @@
 #include "Hsbg_Const.h"
 #include "Hsbg_Tools.h"
 #include "Hsbg_Global.h"
-#include "Hsbg_Parser.h"
-#include "Hsbg_InteG.h"
+#include "Hsbg_Tasker.h"
+#include "Hsbg_Integral_GTO.h"
 #include "Hsbg_SCF.h"
 
 using namespace std;
@@ -71,13 +71,13 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	HTask task = HTask();						// build a task	
+	Tasker task = Tasker();						// build a task	
 	task.set_IO(hiffile, logfile);				// set IO settings
 	task.set_Job("sp","hf","3-21g"); 			// default setting, if the hiffile doesn't give settings
 	task.read_Task();							// read from *.hif file
 	
 	cout << task ;								// show detials of the task
-	HScf my_scf = HScf(task.Title);		// build an object of SCF
+	SCFer my_scf = SCFer(task.Title);		// build an object of SCF
 	my_scf.set_Space(task);						// set SCF basisset space size
 	my_scf.set_Threshold(0.00000001);			// set SCF threshold
 	my_scf.loop_SCF();							// do SCF job

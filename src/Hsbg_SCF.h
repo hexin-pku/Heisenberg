@@ -6,27 +6,28 @@
 #include <fstream>
 #include <cmath>
 
+#include <vector>
+
 #include "Eigen/Dense"
 #include <unsupported/Eigen/CXX11/Tensor>
 
 #include "Hsbg_Const.h"
 #include "Hsbg_Tools.h"
 #include "Hsbg_Global.h"
-#include "Hsbg_Parser.h"
-#include "Hsbg_InteG.h"
+#include "Hsbg_Tasker.h"
+#include "Hsbg_Integral_GTO.h"
 
 using namespace std;
-using namespace Hsbg;
 using namespace Eigen;
 
 typedef Eigen::Tensor< double , 4 > Tensor4D;
 
-class HScf
+class SCFer
 {	
 	private:
 		ofstream report; 
 	public:
-		HTask* tasklink;
+		Tasker* tasklink;
 		System* SYSlink;
 		
 		string Scf_name;
@@ -57,13 +58,13 @@ class HScf
 		MatrixXd	eigen_P_old;
 		int* 		list;
 	
-	HScf(const HScf&);
-	HScf(string scf_name){
+	SCFer(const SCFer&);
+	SCFer(string scf_name){
 		this->Scf_name = scf_name;
 		this->do_loop = true;
 	}
 	
-	~HScf()
+	~SCFer()
 	{
 		this->report.close();
 	}
@@ -74,11 +75,11 @@ class HScf
 		return 0;
 	}
 	
-	int set_Space(HTask& HT)
+	int set_Space(Tasker& T)
 	{
-		this->tasklink = &HT;
-		this->SYSlink = &HT.Sys;
-		this->nsz = HT.Nbasis;  // wothout add 1
+		this->tasklink = &T;
+		this->SYSlink = &T.Sys;
+		this->nsz = T.Nbasis;  // wothout add 1
 		cout << "size of the space: " << this->nsz << endl << endl;
 		
 		eigen_S = MatrixXd(this->nsz, this->nsz);
@@ -99,7 +100,7 @@ class HScf
 		this->nocc = (this->tasklink->Nelec + 1) / 2;
 		this->list = new int[this->nocc];
 		//
-		this->report.open(HT.Logfile.data());
+		this->report.open(T.Logfile.data());
 
 		return 0;
 	}
@@ -124,9 +125,11 @@ class HScf
 		this->report << *(this->tasklink) << endl;
 		this->calc_SHERI(this->tasklink->Sys, this->eigen_S, this->eigen_H, this->eigen_ERI);
 		this->calc_XY();
+		// cout << this->eigen_X << endl;
+		
 		this->guess_P();
 		
-		while( this->do_loop && cnt<128)
+		while( this->do_loop && cnt<32)
 		{	
 			E_old = this->E;
 			cout << "######################### loop " << cnt+1 << " ##########################" << endl;
@@ -146,7 +149,7 @@ class HScf
 	}
 };
 
-int HScf::calc_SHERI(System &SYS, MatrixXd &S, MatrixXd &H, Tensor4D &ERI)
+int SCFer::calc_SHERI(System &SYS, MatrixXd &S, MatrixXd &H, Tensor4D &ERI)
 {
 	ofstream fS, fH, fERI;
 	fS.open("S.dat");
@@ -158,23 +161,29 @@ int HScf::calc_SHERI(System &SYS, MatrixXd &S, MatrixXd &H, Tensor4D &ERI)
 	{
 		for(int m2=m1; m2<SYS.Nbasis; m2++)
 		{
-			S(m1, m2) = integral_S_sstype(SYS[m1], SYS[m2]);
+			//S(m1, m2) = integral_S_sstype(SYS[m1], SYS[m2]);
+			S(m1, m2) = IntecGTO_S(SYS[m1], SYS[m2]);
 			if(m1!=m2) S(m2, m1) = S(m1, m2);
 			fS << m1 << " " << m2 << " "<< S(m1, m2) << endl << endl;
 			H(m1, m2) = integral_T_sstype( SYS[m1], SYS[m2] );
+			//H(m1, m2) = IntecGTO_T(SYS[m1], SYS[m2]);
+			
 			for(int k=1; k<= SYS.Natom; k++)
 			{
 				H(m1, m2) += integral_V_sstype(SYS[m1], SYS[m2], SYS.atoms[k]);
+				//H(m1, m2) += IntecGTO_V(SYS[m1], SYS[m2], SYS.atoms[k]);
 			}
 			if(m1!=m2) H(m2, m1) = H(m1, m2);
+			fH << m1 << " " << m2 << " "<< H(m1, m2) << endl << endl;
+			
 			for(int m3=0; m3<SYS.Nbasis; m3++)
 			{
 				for(int m4=m3; m4<SYS.Nbasis; m4++)
 				{
 					if(m2*(m2+1)+2*m1 <= m4*(m4+1)+2*m3)
 					{
-						ERI( m1, m2, m3, m4)
-						= integral_ERI_sstype( SYS[m1], SYS[m2], SYS[m3], SYS[m4] );
+						ERI( m1, m2, m3, m4) = integral_ERI_sstype( SYS[m1], SYS[m2], SYS[m3], SYS[m4] );
+						//ERI( m1, m2, m3, m4) = IntecGTO_ERI( SYS[m1], SYS[m2], SYS[m3], SYS[m4] );
 						// ERI exchange
 						ERI( m2, m1, m3, m4) = ERI( m1, m2, m3, m4);
 						ERI( m1, m2, m4, m3) = ERI( m1, m2, m3, m4);
@@ -201,15 +210,15 @@ int HScf::calc_SHERI(System &SYS, MatrixXd &S, MatrixXd &H, Tensor4D &ERI)
 	this->report << "Inte   H_AO: " << endl << H << endl << endl;
 	this->report << "Inte ERI_AO: " << endl << ERI << endl << endl;
 	// for test
-	/*  
+	 
 	cout << "Inte   S_AO: " << endl << S << endl << endl;	
 	cout << "Inte   H_AO: " << endl << H << endl << endl;
 	cout << "Inte ERI_AO: " << endl << ERI << endl << endl;
-	*/
+	
 	return 0;
 }
 
-int HScf::guess_P()
+int SCFer::guess_P()
 {
 	// from H we guess a C
 	this->eigen_F = this->eigen_H;
@@ -221,7 +230,7 @@ int HScf::guess_P()
 }
 
 
-int HScf::calc_XY()
+int SCFer::calc_XY()
 {
 	EigenSolver<MatrixXd> eig(this->eigen_S);
 	MatrixXd L1(this->nsz, this->nsz);	MatrixXd L2(this->nsz, this->nsz);
@@ -248,7 +257,7 @@ int HScf::calc_XY()
 	return 0;
 }
 
-int HScf::calc_Fock()
+int SCFer::calc_Fock()
 {
 	for(int m1=0; m1 < this->SYSlink->Nbasis; m1++)
 	{
@@ -287,7 +296,7 @@ int HScf::calc_Fock()
 	return 0;
 }
 
-int HScf::calc_Cprim()
+int SCFer::calc_Cprim()
 {
 	EigenSolver<MatrixXd> eig(this->eigen_Fp);
 	this->eigen_E.setZero(this->nsz);
@@ -316,7 +325,7 @@ int HScf::calc_Cprim()
 	return 0;
 }
 
-int HScf::tr_Cprim2C()
+int SCFer::tr_Cprim2C()
 {
 	this->eigen_C = this->eigen_X * this->eigen_Cp;
 	// for test
@@ -334,7 +343,7 @@ int HScf::tr_Cprim2C()
 	return 0;
 }
 
-int HScf::calc_PE()
+int SCFer::calc_PE()
 {	
 	for(int i1=1; i1 <= this->SYSlink->Natom; i1++)
 	{
@@ -362,14 +371,14 @@ int HScf::calc_PE()
 	this->E = get_NE();
 	for(int k=0; k<this->nocc; k++)
 	{
-		this->E += this->eigen_E(list[k]);// + (this->eigen_P*this->eigen_H)(list[k],list[k]);
+		this->E += this->eigen_E(this->list[k]) ;//+ (this->eigen_P*this->eigen_H)(list[k],list[k]);
 	}
 	this->E += (this->eigen_P*this->eigen_H).trace(); // trace only on ocuppied ??
 	this->report_SCF();
 	return 0;
 }
 
-int HScf::report_SCF()
+int SCFer::report_SCF()
 {	this->report << "test C_MO" << endl << this->eigen_Cp << endl << endl;
 	this->report << "test C_AO" << endl << this->eigen_C << endl << endl;
 	this->report << "test S_MO : C^ * S * C" 
@@ -385,7 +394,7 @@ int HScf::report_SCF()
 	return 0;
 }
 
-double HScf::get_NE()
+double SCFer::get_NE()
 {
 	double sum=0;
 	for(int i=1;i<=this->SYSlink->Natom; i++)
@@ -400,19 +409,23 @@ double HScf::get_NE()
 	return sum;
 }
 
-int HScf::check_Loop(int cnt)
+int SCFer::check_Loop(int cnt)
 {
+	// output the result at each loop
+	cout << "# SCF LOOP RESULT" << cnt << endl << endl;
+	cout << "    Energy_MO values: " <<  endl << this->eigen_E << endl;
+	cout << "    Occupied indexes: "; for(int i=0; i<this->nocc; i++) cout << " " << this->list[i]; cout << endl;
+	cout << "    Energy_Total : " << this->E << "    " << "Convergence: " << E_old-this->E << endl << endl;
+	//
 	if( abs(this->E - this->E_old) < this->threshold && this->m_Diff(this->eigen_P,this->eigen_P_old) )
 	{
 		this->do_loop = false;
 	}
-	cout << "# SCF LOOP RESULT" << cnt << endl << endl;
-	cout << "    E: " << this->E << "    " << "Convergence: " << E_old-this->E << endl << endl;
 	this->E_old = this->E;
 	return 0;
 }
 
-double HScf::m_Diff(MatrixXd &M, MatrixXd &N)
+double SCFer::m_Diff(MatrixXd &M, MatrixXd &N)
 {
 	double find=0;
 	if(M.rows()!=N.rows() || M.cols()!=N.cols()) {cerr<< "Matrix size not match"<< endl << endl; exit(-1);}

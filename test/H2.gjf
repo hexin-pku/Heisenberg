@@ -1,5 +1,5 @@
 %chk=D:\G09W\hwjt\Excellent\H2.chk
-# opt hf/6-31g geom=connectivity
+# sp rhf/6-31g geom=connectivity
 
 Title Card Required
 

@@ -1,6 +1,6 @@
 CFLAG=g++
-Hsbg= main.cpp
-EXE=Hsbg
+Hsbg= ./src/main.cpp
+EXE=./src/main
 LALIB=../lib/
 
 default:

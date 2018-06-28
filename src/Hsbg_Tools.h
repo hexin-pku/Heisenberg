@@ -1,5 +1,5 @@
-#ifndef Hsbg_Tools_H
-#define Hsbg_Tools_H
+#ifndef basic_Tools_H
+#define basic_Tools_H
 
 #include <string>
 

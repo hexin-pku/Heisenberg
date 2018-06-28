@@ -15,6 +15,7 @@ using namespace std;
 
 namespace Hsbg
 {
+
 	/* here defines basic class: 
 	
 		Point, Orbital, Orbital_cgto, Atom, Molecule, System
@@ -128,6 +129,24 @@ namespace Hsbg
 			P.x = this->x*a;
 			P.y = this->y*a;
 			P.z = this->z*a;
+			return  P;
+		}
+		
+		Point operator*(const double& a)
+		{
+			Point P = Point();
+			P.x = this->x*a;
+			P.y = this->y*a;
+			P.z = this->z*a;
+			return  P;
+		}
+		
+		Point operator/(const double& a)
+		{
+			Point P = Point();
+			P.x = this->x/a;
+			P.y = this->y/a;
+			P.z = this->z/a;
 			return  P;
 		}
 	
@@ -861,7 +880,6 @@ namespace Hsbg
 	};
 
 };
-
 
 #endif
 

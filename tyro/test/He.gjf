@@ -1,0 +1,10 @@
+%chk=D:\G09W\hwjt\test\He.chk
+# sp rhf/6-31g geom=connectivity
+
+Title Card Required
+
+0 1
+ He                0.00000000    0.00000000    0.00000000
+
+ 1
+
