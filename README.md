@@ -289,7 +289,8 @@
 
 #### PGTO的表达和积分的计算 
 1. 归一化系数的计算
-对于一个一般的PGTO，我们使用记号 $\mid aAlmn\rangle=x^l y^m z^n\exp(-a(\vec{r}-\vec{A})^2)$来表达。  
+对于一个一般的PGTO，我们使用记号 <img src="http://latex.codecogs.com/gif.latex?\mid aAlmn\rangle=x^l y^m z^n\exp(-a(\vec{r}-\vec{A})^2)/>
+来表达。  
 则首先，考虑一个一般的PGTO的归一化系数N:  
 $$\frac{1}{N^2}=\int x^{2l} y^{2m} z^{2n}\exp(-2a(\vec{r}-\vec{A})^2)
 $$
