@@ -1,6 +1,3 @@
-
-<h4 style="text-align:right">The Course of Computational Chemisty; Peking University</h4>
------
 <p><br>
 <h1 style="text-align:center"><font face="Times" size=6> Tutorial of Heisenberg - ver.01 </font></h1>
 <br>
