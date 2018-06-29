@@ -287,7 +287,7 @@
 ## 3.分子积分的处理
 使用通用的积分，这里详细说明其计算方法。
 
-#### [PGTO的表达和积分的计算](https://rawgithub.com/XShinHe/Heisenberg/blob/master/doc/PGTO.html)
+#### [PGTO的表达和积分的计算](https://rawgit.com/XShinHe/Heisenberg/master/doc/PGTO.html)
 
 #### 积分的函数说明  (**Hsbg_Integral_GTO.h**)
 
