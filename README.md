@@ -347,4 +347,8 @@
 | H4     | -1.80246920     | -1.7251712  | 不一致 |
 | CH4    | 震荡问题       | -39.9119255 |不一致|
 
-
+## 7. BUGs汇报  
+- [ ] stream can not be compared with **NULL**, so have fixed it.  
+- [ ] unsupported module of Eigen now gives warning when compile, (but also can give the executable procedure).  
+- [ ] integral writting wrong! ( $\overline{PA}$ all should to be positive ); so now, S integral is totally correct (maybe the T integral is correct too), but V or ERI might still wrong.  
+ 
