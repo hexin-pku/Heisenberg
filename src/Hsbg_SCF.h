@@ -10,7 +10,11 @@
 
 #include "Eigen/Dense"
 #include <unsupported/Eigen/CXX11/Tensor>
-
+// Tensor support poorly dead, conflict with the g++ compliler, with warning:
+/*
+    warning: ignoring attributes on template argument ‘Eigen::TensorEvaluator<const Eigen::TensorEvalToOp<const Eigen::Tensor<double, 4>, Eigen::MakePointer>,              
+    Eigen::DefaultDevice>::PacketReturnType {aka __vector(2) double}’ [-Wignored-attributes]
+*/
 #include "Hsbg_Const.h"
 #include "Hsbg_Tools.h"
 #include "Hsbg_Global.h"
@@ -165,13 +169,13 @@ int SCFer::calc_SHERI(System &SYS, MatrixXd &S, MatrixXd &H, Tensor4D &ERI)
 			S(m1, m2) = IntecGTO_S(SYS[m1], SYS[m2]);
 			if(m1!=m2) S(m2, m1) = S(m1, m2);
 			fS << m1 << " " << m2 << " "<< S(m1, m2) << endl << endl;
-			H(m1, m2) = integral_T_sstype( SYS[m1], SYS[m2] );
-			//H(m1, m2) = IntecGTO_T(SYS[m1], SYS[m2]);
+			//H(m1, m2) = integral_T_sstype( SYS[m1], SYS[m2] );
+			H(m1, m2) = IntecGTO_T(SYS[m1], SYS[m2]);
 			
 			for(int k=1; k<= SYS.Natom; k++)
 			{
-				H(m1, m2) += integral_V_sstype(SYS[m1], SYS[m2], SYS.atoms[k]);
-				//H(m1, m2) += IntecGTO_V(SYS[m1], SYS[m2], SYS.atoms[k]);
+				//H(m1, m2) += integral_V_sstype(SYS[m1], SYS[m2], SYS.atoms[k]);
+				H(m1, m2) += IntecGTO_V(SYS[m1], SYS[m2], SYS.atoms[k]);
 			}
 			if(m1!=m2) H(m2, m1) = H(m1, m2);
 			fH << m1 << " " << m2 << " "<< H(m1, m2) << endl << endl;

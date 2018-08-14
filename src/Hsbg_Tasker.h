@@ -76,7 +76,7 @@ class Tasker
 	    fstream fin;
 	    
 	    fin.open(this->Hiffile.data(), ios::in);
-	    if(fin == NULL)
+	    if(fin.fail())
 	    {
 		    cerr << "error: "<< this->Hiffile <<" doesn't exist" << endl;
 		    exit(-1);

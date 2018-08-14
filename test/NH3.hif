@@ -1,0 +1,15 @@
+% this file-format is called [Heisenberg Input file].hif
+% 		, which is similiar to Gauss's <>.gjf file, but '%' stand for an annotation.
+% 		so, certainly this program support the .gjf file, but ignore the chk setting.
+% 
+% the Heisenberg program now does't set .chk file, if it would one day, the annotation sign are plan
+%		to substitute by '!'
+# sp hf/3-3g geom=connectivity
+
+Title Card Required
+
+0 1
+ N                  0.16365         0.16365     0.16365
+ H                  1.15101         0           0
+ H                  0               1.15101     0
+ H                  0               0           1.15101         

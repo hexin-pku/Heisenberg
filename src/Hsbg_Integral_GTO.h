@@ -34,7 +34,6 @@ using namespace Eigen;
 	int binomial(int a, int b);
 	int factorial(int a);
 	int doublefactorial(int a);
-	double Hermite_normial(double x, int n);
 	double Kcoeff(
 		Orbital& orb1,
 		Orbital& orb2
@@ -282,70 +281,26 @@ double integral_V_sstype(
 	doublefactorial(a), return a!!
 
 */
+
+//  we suppose that all coder should know the a,b,n below shoulde be non-negative !
 int binomial(int a, int b)
 {
-	if(a<b){cerr << "error" << endl; exit(-1);}
-	int result = 1;
-	int factor = 1;
-	for(int i=1; i<=b; i++){
-		result*=(a-i+1);
-		factor*=i;
-	}
-	return result/factor;
+	return (a <= b || b==0 ) ? 1 : binomial(a-1,b) + binomial(a-1,b-1) ;
 }
 
-int factorial(int a)
+int factorial( int n )
 {
-	if(a==0) return 1;
-	int result=1;
-	for(int i=a; i>1; i--){
-		result*=i;
-	}
-	return result;
+    return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n;
 }
 
-int doublefactorial(int a)
+int doublefactorial(int n)
 {
-	if(a==0 || a==-1) return 1;
-	int result=1;
-	for(int i=a; i>=2; i-=2){
-		result*=i;
-	}
-	return result;
+	return (n == 1 || n == 0) ? 1 : factorial(n - 2) * n;
 }
 
-double Hermite_normial(
-	double x,
-	int n
-)
-{
-	if(n==0) return 1;
-	if(n==1) return 2*x;
-	if(n==2) return 4*x*x-2;
-	if(n==3) return 8*x*x*x -12*x;
-	if(n==4) return 16*pow(x,4)-48*pow(x,2)+12;
-	if(n==5) return 32*pow(x,5)-160*pow(x,3)+120*x;
-	if(n==6) return 64*pow(x,6)-480*pow(x,4)+720*pow(x,2)-120;
-	if(n==7) return 128*pow(x,7)-1344*pow(x,5)+3360*pow(x,3)-1680*x;
-	if(n==8) return 256*pow(x,8)-3584*pow(x,6)+13440*pow(x,4)-13440*x*x+1680;
-	
-	double sum = 0;
-	for(int m=0; m<=n/2; m++)
-	{
-		int hermi = 1;
-		int factor = 1;
-		for(int j=1; j<=m; j++)
-		{
-			hermi *= (n-2*j+2)*(n-2*j+1);
-			factor *= (-2*j);
-		}
-		sum += (double)(hermi/factor) * pow(x, n-2*m);
-	}
-	return sum;
-}
-
+//  K-coefficient and its derivatives
 double Kcoeff(
-	Orbital& orb1, 
+	Orbital& orb1,
 	Orbital& orb2
 )
 {
@@ -372,7 +327,7 @@ double general_Kcoeff
 	double effABz = sqrt(effalpha) * (orb1.get_Point() - orb2.get_Point()).z;
 	
 	return Kcoeff(orb1, orb2) * (LMN%2==0?1:-1) * pow(effalpha,0.5*LMNLMN) * 
-	Hermite_normial(effABx,LL) * Hermite_normial(effABy,MM) * Hermite_normial(effABz,NN);
+	std::hermite(LL, effABx) * std::hermite(MM, effABy) * std::hermite(NN, effABz);
 }
 
 double general_Kcoeff_ERI(
@@ -388,7 +343,7 @@ double general_Kcoeff_ERI(
 	general_Kcoeff(orb3, orb4, d7, d8, d9, d10, d11, d12);
 }
 
-
+//  K-coefficient and its derivatives
 double Fn(
 	double w,
 	int m
@@ -430,7 +385,7 @@ double general_Fn_V(
 	
 	return pow(orb1.alpha/effalpha, LMN) * pow(orb2.alpha/effalpha, LMNLMN-LMN) * 
 	(LMNLMN%2==0?1:-1) * pow(effalpha, 0.5*LMNLMN) * Fn_pade(w, LMNLMN) *
-	Hermite_normial(effPCx,LL) * Hermite_normial(effPCy,MM) * Hermite_normial(effPCz,NN); 
+	std::hermite(LL, effPCx) * std::hermite(MM, effPCy) * std::hermite(NN, effPCz); 
 }
 
 
@@ -465,7 +420,7 @@ double general_Fn_ERI(
 	return pow(orb1.alpha/(orb1.alpha+orb2.alpha), LMN1) * pow(orb2.alpha/(orb1.alpha+orb2.alpha), LMN2) * 
 	pow(orb3.alpha/(orb3.alpha+orb4.alpha), LMN3) * pow(orb4.alpha/(orb3.alpha+orb4.alpha), LMN4) * 
 	(LMN12%2==0?1:-1) * pow(effalpha, 0.5*LMN1234) * Fn_pade(w, LMN1234) *
-	Hermite_normial(effPQx,LL) * Hermite_normial(effPQy,MM) * Hermite_normial(effPQz,NN); 
+	std::hermite(LL, effPQx) * std::hermite(MM, effPQy) * std::hermite(NN, effPQz); 
 }
 
 /////////////////////////////////////////////////// general integral function of S matrix
@@ -508,16 +463,16 @@ double IScoeff(
 	
 	if(flag=='x'){
 		L1 = orb1.L; L2=orb2.L;
-		PA = (orb1.get_Point() - P).x;
-		PB = (orb2.get_Point() - P).x;
+		PA = (P - orb1.get_Point()).x;
+		PB = (P - orb2.get_Point()).x;
 	}else if(flag=='y'){
 		L1 = orb1.M; L2=orb2.M;
-		PA = (orb1.get_Point() - P).y;
-		PB = (orb2.get_Point() - P).y;
+		PA = (P - orb1.get_Point()).y;
+		PB = (P - orb2.get_Point()).y;
 	}else if(flag=='z'){
 		L1 = orb1.N; L2=orb2.N;
-		PA = (orb1.get_Point() - P).z;
-		PB = (orb2.get_Point() - P).z;
+		PA = (P - orb1.get_Point()).z;
+		PB = (P - orb2.get_Point()).z;
 	}else{
 		cerr << "error, flag of I of Integral of S is incorrect" << endl; exit(-1);
 	}

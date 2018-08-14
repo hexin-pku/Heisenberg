@@ -442,7 +442,7 @@ namespace Hsbg
 	   	{
 		   	string  buff;
 		   	istringstream istr(line);
-		   	if(istr == NULL)
+		   	if(istr.fail())
 			{
 				cerr << "error: istringstream is null, in (Atom::read_atom)" << endl;
 				exit(-1);
@@ -511,7 +511,7 @@ namespace Hsbg
 			string  basisfile="../basis/"+my_bname+".dat";
 			string 	line;
 			fin.open(basisfile.data(), ios::in);
-			if(fin==NULL) {cerr << "basis file " << basisfile << " doesn't exist!" << endl; exit(-1);}
+			if(fin.fail()) {cerr << "basis file " << basisfile << " doesn't exist!" << endl; exit(-1);}
 			int cnt=0;
 			while(getline(fin,line))
 	   		{
