@@ -31,7 +31,7 @@
 #define c_na 6.02214179E23                   /*- Avagadro's number -*/
 #define c_me 9.10938215E-31                  /*- Electron rest mass (in kg)-*/
 
-#define PI		3.14159265358979323846
+#define PI		3.14159265358979323846264338327950288
 
 #define MAX_ELEMENT 118
 static const char *elements_label[]=

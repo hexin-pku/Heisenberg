@@ -25,7 +25,7 @@ namespace Hsbg
 		!                                                                         !
 		!		[ note: ----- inherit, ===== list, =-=-= inherit & list ]         !
 		!                                                                         !
-		!		Point ----- Orbital =-=-= Orbital_cgto                            !
+		!		Point ------------------- Orbital_cgto                            !
 		!		   `                        //                                    !
 		!			   `                   //                                     !
 		!			       `              //                                      !
@@ -90,12 +90,12 @@ namespace Hsbg
 			return (this->ref_Point(A)).norm2();
 		}
 	
-		friend double dist_AB(Point A, Point B)
+		static double dist_AB(Point A, Point B)
 		{
 			return sqrt( (A.x-B.x)*(A.x-B.x) + (A.y-B.y)*(A.y-B.y) + (A.z-B.z)*(A.z-B.z) );
 		}
 	
-		friend double dist_AB2(Point A, Point B)
+		static double dist_AB2(Point A, Point B)
 		{
 			return (A.x-B.x)*(A.x-B.x) + (A.y-B.y)*(A.y-B.y) + (A.z-B.z)*(A.z-B.z);
 		}
@@ -168,117 +168,8 @@ namespace Hsbg
 		   	return output;          
 	   	}
 	};
-	
-	class Orbital: public Point
-	{
-		public:
-			/*
-			// these attributes are inherited from Point
-			string name; 	// name of function, such as sto, gto
-			double x;		// position
-			double y;
-			double z;
-			*/
-			int L;			// of the type of gauss/slater
-			int M;
-			int N;
-			double alpha;	// alpha of gauss/slater
-	
-		int set_Alpha(double aa)
-		{
-			this->alpha = aa;
-			return 0;
-		}
-		
-		int set_LMN(int ll,int mm, int nn)
-		{
-			this->L=ll;
-			this->M=mm;
-			this->N=nn;
-			return 0;
-		}
-	
-		int set_XYZ(double xx, double yy, double zz)
-		{
-			this->x=xx;
-			this->y=yy;
-			this->z=zz;
-			return 0;
-		}
-	
-		int set_XYZ(Point P)
-		{
-			this->x=P.x;
-			this->y=P.y;
-			this->z=P.z;
-			return 0;
-		}
-	
-		Point& get_Point()
-		{
-				Point* P = new Point();
-				P->name = "NULL";
-				P->x = this->x;
-				P->y = this->y;
-				P->z = this->z;
-				return *P;
-		}
-	
-		int get_LMN(int& ll,int& mm, int& nn)
-		{
-			ll=this->L;
-			mm=this->M;
-			nn=this->N;
-			return 0;
-		}
-	
-		int get_XYZ(double& xx, double& yy, double& zz)
-		{
-			xx=this->x;
-			yy=this->y;
-			zz=this->z;
-			return 0;
-		}
-	
-		int conv_AUnit()
-		{
-			this->x = this->x / c_bohr2ai;
-			this->y = this->y / c_bohr2ai;
-			this->z = this->z / c_bohr2ai;
-			return 0;
-		}
-		
-		double normGTO()
-		{
-			int n1 = 2*this->L - 1, // x-direction
-			n2 = 2*this->M - 1, 	// y-direction
-			n3 = 2*this->N - 1,		// z-direction
-			total = 1;
-		
-			for(int i = 3; i <= n1; i+=2) total *= i;
-			for(int i = 3; i <= n2; i+=2) total *= i;
-			for(int i = 3; i <= n3; i+=2) total *= i;
-			return pow(2*this->alpha/PI, 0.75) 
-				* sqrt(pow(4*this->alpha, this->L+this->M+this->N)/static_cast<double>(total));	
-		}
-		
-		double normGTO( double a)
-		{
-			int n1 = 2*this->L - 1, // x-direction
-			n2 = 2*this->M - 1, 	// y-direction
-			n3 = 2*this->N - 1,		// z-direction
-			total = 1;
-		
-			for(int i = 3; i <= n1; i+=2) total *= i;
-			for(int i = 3; i <= n2; i+=2) total *= i;
-			for(int i = 3; i <= n3; i+=2) total *= i;
-			return pow(2*a/PI, 0.75) * sqrt(pow(4*a, this->L+this->M+this->N)/static_cast<double>(total));	
-		}
-	};
 
-
-
-	class Orbital_cgto : public Orbital
+	class Orbital_cgto : public Point
 	{
 		public:
 			/*
@@ -288,23 +179,20 @@ namespace Hsbg
 			double y;
 			double z;
 			
+			*/
 			// these attributes are inherited from Orbital
 			int L;			// of gauss/slater
 			int M;
 			int N;
-			double alpha;	// alpha of gauss/slater
-			*/
-			// here we note BohrL = L + M + N;
-			int cn;	// contraction number
-		
+			
+			int cn;	        // contraction number
 			double* coeffs;
 			double* alphas;	// will abandon in the futures
-			Orbital* gtos;
 	
 		//Orbital_cgto(int num);
 		~Orbital_cgto()
 		{
-			delete[] gtos;
+			delete[] alphas;
 			delete[] coeffs;
 		}
 
@@ -313,7 +201,6 @@ namespace Hsbg
 			this->cn = num;
 			this->coeffs = new double[num];
 			this->alphas = new double[num];
-			this->gtos = new Orbital[num];
 			return 0;
 		}
 	
@@ -322,7 +209,7 @@ namespace Hsbg
 		{
 			if(idx>=this->cn) {cerr << "error, segment in cgto" << endl; exit(-1);}
 			cc = this->coeffs[idx];
-			aa = this->gtos[idx].alpha;
+			aa = this->alphas[idx];
 			return 0;
 		}
 	
@@ -332,7 +219,6 @@ namespace Hsbg
 			this->L=ll;
 			this->M=mm;
 			this->N=nn;
-			for(int i=0; i<this->cn; i++) this->gtos[i].set_LMN(ll,mm,nn);
 			return 0;
 		}
 	
@@ -342,7 +228,6 @@ namespace Hsbg
 			this->x=xx;
 			this->y=yy;
 			this->z=zz;
-			for(int i=0; i<this->cn; i++) this->gtos[i].set_XYZ(xx,yy,zz);
 			return 0;
 		}
 	
@@ -352,7 +237,6 @@ namespace Hsbg
 			this->x=P.x;
 			this->y=P.y;
 			this->z=P.z;
-			for(int i=0; i<this->cn; i++) this->gtos[i].set_XYZ(P);
 			return 0;
 		}
 	
@@ -362,7 +246,6 @@ namespace Hsbg
 			this->x = this->x / c_bohr2ai;
 			this->y = this->y / c_bohr2ai;
 			this->z = this->z / c_bohr2ai;
-			for(int i=0; i<this->cn; i++) (this->gtos[i]).conv_AUnit();
 			return 0;
 		}
 	
@@ -384,8 +267,8 @@ namespace Hsbg
 			for(int i = 3; i <= n1; i+=2) total *= i;
 			for(int i = 3; i <= n2; i+=2) total *= i;
 			for(int i = 3; i <= n3; i+=2) total *= i;
-			return 	pow(2*this->gtos[k].alpha/PI, 0.75) * 
-					sqrt(pow(4*this->gtos[k].alpha, L+M+N)/static_cast<double>(total));	
+			return 	pow(2*this->alphas[k]/PI, 0.75) * 
+					sqrt(pow(4*this->alphas[k], L+M+N)/static_cast<double>(total));	
 		}
 	}; 
 
@@ -615,13 +498,6 @@ namespace Hsbg
 			}
 		
 			// to synchronize alpha from cgto ---> gto
-			for(int i=0; i<this->ncgto; i++)
-			{
-				for(int j=0; j<this->cgto[i].cn; j++)
-				{
-					this->cgto[i].gtos[j].alpha = this->cgto[i].alphas[j];
-				}
-			}
 			return 0;
 		}
 

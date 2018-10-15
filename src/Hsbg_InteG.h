@@ -12,7 +12,6 @@
 #include "Hsbg_Const.h"
 #include "Hsbg_Tools.h"
 #include "Hsbg_Global.h"
-#include "Hsbg_Parser.h"
 
 
 using namespace std;

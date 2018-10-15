@@ -14,6 +14,8 @@
 /*
     warning: ignoring attributes on template argument ‘Eigen::TensorEvaluator<const Eigen::TensorEvalToOp<const Eigen::Tensor<double, 4>, Eigen::MakePointer>,              
     Eigen::DefaultDevice>::PacketReturnType {aka __vector(2) double}’ [-Wignored-attributes]
+    
+    aiming to use LAPACK instand. or write a simple matrix lib.
 */
 #include "Hsbg_Const.h"
 #include "Hsbg_Tools.h"
@@ -186,8 +188,8 @@ int SCFer::calc_SHERI(System &SYS, MatrixXd &S, MatrixXd &H, Tensor4D &ERI)
 				{
 					if(m2*(m2+1)+2*m1 <= m4*(m4+1)+2*m3)
 					{
-						ERI( m1, m2, m3, m4) = integral_ERI_sstype( SYS[m1], SYS[m2], SYS[m3], SYS[m4] );
-						//ERI( m1, m2, m3, m4) = IntecGTO_ERI( SYS[m1], SYS[m2], SYS[m3], SYS[m4] );
+						//ERI( m1, m2, m3, m4) = integral_ERI_sstype( SYS[m1], SYS[m2], SYS[m3], SYS[m4] );
+						ERI( m1, m2, m3, m4) = IntecGTO_ERI( SYS[m1], SYS[m2], SYS[m3], SYS[m4] );
 						// ERI exchange
 						ERI( m2, m1, m3, m4) = ERI( m1, m2, m3, m4);
 						ERI( m1, m2, m4, m3) = ERI( m1, m2, m3, m4);

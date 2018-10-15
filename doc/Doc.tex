@@ -1,0 +1,589 @@
+
+% Default to the notebook output style
+
+    
+
+
+% Inherit from the specified cell style.
+
+
+
+
+    
+\documentclass[11pt]{article}
+
+    
+    
+    \usepackage[T1]{fontenc}
+    % Nicer default font (+ math font) than Computer Modern for most use cases
+    \usepackage{mathpazo}
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % We will generate all images so they have a width \maxwidth. This means
+    % that they will get their normal width if they fit onto the page, but
+    % are scaled down if they would overflow the margins.
+    \makeatletter
+    \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+    \else\Gin@nat@width\fi}
+    \makeatother
+    \let\Oldincludegraphics\includegraphics
+    % Set max figure width to be 80% of text width, for now hardcoded.
+    \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=.8\maxwidth]{#1}}
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionLabelFormat{nolabel}{}
+    \captionsetup{labelformat=nolabel}
+
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    
+
+    
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{5th Homework Tutorial of Quantum Chemistry Programming - ver.01 }
+    \author{XShinHe}
+    \date{}
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+    \begin{document}
+    
+    
+    \maketitle
+    
+    
+
+    
+
+\begin{center}\rule{1\linewidth}{\linethickness}\end{center}
+The Course of Computational Chemistry, Peking University\\
+Acknowledgement to Prof. Wenjian Liu.
+
+
+    \section{Members}\label{members}
+
+Qilin He, Zhi Zi, Haoming Liu, Ta Teng，Zuoran Qiao, Xin He(Leader)\\
+ An old version refers
+https://github.com/Utenaq/2018QC-Project-Ab-initio-wavefunction-program
+.\\
+
+    \section{compile and usage}\label{compile-and-usage}
+
+\subsection{compile}\label{compile}
+
+in the main directory or under \texttt{./src}, use \texttt{make}
+command; it needs g++ compiler.
+
+\subsection{usage}\label{usage}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule
+command & term &\tabularnewline
+\midrule
+\endhead
+\texttt{main\ -h} & get help info &\tabularnewline
+\texttt{main\ -d} & default test (eg. HeH+) & test file locates in
+\texttt{../test}\tabularnewline
+\texttt{main\ -f\ {[}file.gjf{]}} & normal calculation & a series test
+file are under \texttt{../test}\tabularnewline
+\bottomrule
+\end{longtable}
+
+optional test file lies in \texttt{../test}，including \textbf{H.gjf},
+\textbf{He.gjf}, \textbf{H2.gjf}, \textbf{HeH.gjf}, \textbf{H4.gjf},
+\textbf{CH4.gjf}.\\
+use as \texttt{main\ -f\ ../test/H2.gjf}.
+
+    \section{class and type}\label{class-and-type}
+
+refer to \href{}{class and type}
+
+    \section{handling of molecule
+integral}\label{handling-of-molecule-integral}
+
+    \paragraph{Radial gaussian and cartesian
+gaussian}\label{radial-gaussian-and-cartesian-gaussian}
+\\
+
+radial gaussian gives as:\\
+\[ g_{lmn}(\alpha, \mathbf{r}) = \Big(\sqrt{\frac{2}{\pi}} \frac{(4\alpha)^{n+1/2}}{(2n-1)!!}\Big) r^{n-1}e^{-\alpha r^2} Y_{lm}(\theta, \varphi) \]\\
+but here we more often use the cartesian gaussian as:\\
+\[ g(A,\alpha, l,m,n) = N x_A^l y_A^m z_A^n e^{-\alpha r_A^2} \] where
+by formula\\
+\[\int_{-\infty}^{\infty}x^{2n}e^{-\alpha x^2}=\sqrt{\frac{\pi}{\alpha}}\frac{(2n-1)!!}{(2\alpha)^n}\]
+we have
+\[ N =\big[\big(\frac{2\alpha}{\pi}\big)^{3/2}\frac{(4\alpha)^{l+m+n}}{(2l-1)!!(2m-1)!!(2n-1)!!} \big]^{1/2}\]
+
+    \paragraph{GTO product theorem}\label{gto-product-theorem}
+
+\[ e^{-\alpha_1 r_A^2}e^{-\alpha_2 r_B^2} = \exp\big[-\frac{\alpha_1\alpha_2}{\alpha_1+\alpha_2}\big]\exp\big[-(\alpha_1+\alpha_2)r_P^2 \big] \]
+where
+
+\[ \mathbf{P} \overset{def}{==} \frac{\alpha_1 \mathbf{A} + \alpha_2 \mathbf{B}}{\alpha_1+\alpha_2}\]
+so let \(x_A^{l_1}x_B^{l_2}\) expand at \(x_P\) as:
+\begin{align*}
+x_A^{l_1}x_B^{l_2} &= (x_P - \overline{PA}_x)_A^{l_1} (x_P - \overline{PB}_x)_B^{l_2} 
+\\
+&= \sum_{i_1=0}^{l_1} \sum_{i_2=0}^{l_2} (-1)^{i_1+i_2} C_{l_1}^{i_1}C_{l_2}^{i_2} (\overline{PA}_x)^{l_1-i_1} (\overline{PB}_x)^{l_2-i_2} x_P^{i_1+i_2} 
+\\
+&= \sum_l^{l_1+l_2} (-1)^{l} f_l (l_1,l_2,\overline{PA}_x, \overline{PB}_x) x_P^l
+\end{align*}
+where
+\[ 
+f_l(l_1,l_2,a,b) = \sum_{i_1=0}^{l_1} \sum_{i_2=0}^{l_2} \delta_{l,l_1+l_2} C_{l_1}^{i_1}C_{l_2}^{i_2} a^{l_1-i_1} b^{l_2-i_2} 
+\]
+and so on:\\
+\begin{align*}
+&g(A,\alpha_1,l_1,m_1,n_1)g(B,\alpha_2,l_2,m_2,n_2) 
+\\&= \sum_{l=0}^{l_1+l_2}\sum_{m=0}^{m_1+m_2}\sum_{n=0}^{n_1+n_2}
+(-1)^{l+m+n} f_l (l_1,l_2,\overline{PA}_x, \overline{PB}_x)
+f_m (m_1,m_2,\overline{PA}_y, \overline{PB}_y)
+\\
+&\times
+f_n (n_1,n_2,\overline{PA}_z, \overline{PB}_z)
+x_P^l y_P^m z_P^n 
+\exp\big[-\frac{\alpha_1\alpha_2}{\alpha_1+\alpha_2}\big]\exp\big[-(\alpha_1+\alpha_2)r_P^2 \big]
+\end{align*}
+
+    \paragraph{useful integral formula}\label{useful-integral-formula}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \[ \int_{-\infty}^{\infty} x^{2n}e^{-\alpha x^2}dx = \big(\frac{\pi}{\alpha}\big)^{1/2}
+  \frac{(2n-1)!!}{(2\alpha)^n}
+  \]
+\item
+  \[
+  \int_{-\infty}^{\infty} x^{2n+1}e^{-\alpha x^2}dx = 0
+  \]
+\item
+  \[
+  \int_{-\infty}^{\infty} e^{ixy}x^{n}e^{-\alpha x^2}dx = i^n \big(\frac{\pi}{\alpha}\big)^{1/2}\big(\frac{1}{2\sqrt{\alpha}}\big)^n H_n\big(\frac{y}{2\sqrt{\alpha}}\big) e^{-y^2/4\alpha}
+  \] where \(H_n\) is Hermite polynomial:\\
+  \[
+  H_n(z) = (-1)^n e^{z^2} \frac{d^n}{dz^n} e^{-z^2}
+  = n!\sum_{i=0}^{[n/2]}\frac{(-1)^i}{i!(n-2i)!}(2z)^{n-2i}
+  \]
+\item
+  \[
+  \frac{1}{r} = \frac{1}{2\pi^2} \int e^{i\mathbf{k}\cdot\mathbf{r}}\frac{1}{k^2} d\mathbf{k}
+  \]
+\item
+  \[
+  e^{-\sigma k^2} = 2\sigma k^2 \int_0^1 S^{-3} e^{-\sigma k^2/S^2} dS
+  \]
+\item
+  defines \[
+  F_n (t) = \int_0^1 u^{2n} e^{-t u^2} du
+  \]
+\end{enumerate}
+
+    \paragraph{Radial integral formula (1s
+type)}\label{radial-integral-formula-1s-type}
+
+for n=1, l=m=0, or called 1s function, such integral is derived by
+\textbf{Boys} and \textbf{Shavitt}.\\
+1. S integral\\
+\[ S = \int e^{-a(\mathbf{r}-\mathbf{A})^2 - b(\mathbf{r}-\mathbf{B})^2} 
+= \big( \frac{\pi}{a+b} \big)^{3/2} e^{-ab/(a+b)\cdot \overline{AB}^2 }
+\] 2. T integral\\
+\[ T = \int e^{-a(\mathbf{r}-\mathbf{A})^2}(-)\frac{1}{2}\nabla^2 e^{- b(\mathbf{r}-\mathbf{B})^2} 
+= (\frac{ab}{a+b})(3-\frac{2ab}{a+b}) e^{-ab/(a+b)\cdot \overline{AB}^2 }
+\] 3. V integral\\
+\[ V = \int e^{-a(\mathbf{r}-\mathbf{A})^2} \frac{1}{|\mathbf{r}-\mathbf{C}|} e^{- b(\mathbf{r}-\mathbf{B})^2} 
+= (\frac{2\pi}{a+b}) F_0[(a+b)\overline{CP}^2] e^{-ab/(a+b)\cdot \overline{AB}^2 }
+\]\\
+4. ERI integral
+\begin{align*}
+ I &= \int e^{-a(\mathbf{r_1}-\mathbf{A})^2 - b(\mathbf{r_1}-\mathbf{B})^2} \frac{1}{r_{12}} e^{- c(\mathbf{r_2}-\mathbf{C})^2 - c(\mathbf{r_2}-\mathbf{D})^2} 
+\\
+&= \frac{2\pi^{5/2}}{(a+b)(c+d)\sqrt{a+b+c+d}} F_0[\frac{(a+b)(c+d)}{a+b+c+d}\cdot\overline{PQ}^2] 
+e^{-ab/(a+b)\cdot \overline{AB}^2 - cd/(c+d)\cdot \overline{CD}^2 }
+\end{align*}
+
+    \paragraph{Cartesian integral formula}\label{cartesian-integral-formula}
+
+\begin{itemize}
+\tightlist
+\item
+  overlap integral (S integral)\\
+  by GTO product theorem, we can easily get:\\
+  \[
+  S =\big(\frac{\pi}{a+b}\big)^{3/2} e^{-ab/(a+b)\cdot \overline{AB}^2}\tilde{S}_{l_1l_2}
+  \tilde{S}_{m_1m_2} \tilde{S}_{n_1n_2}
+  \] where\\
+  \[
+  \tilde{S}_{l_1l_2} = \sum_{i=0}^{[\frac{l_1+l_2}{2}]} f_{2i}(l_1,l_2,\overline{PA}_x,\overline{PB}_x) \frac{(2i-1)!!}{2^i (a+b)^i}
+  \]
+\end{itemize}
+
+    \begin{itemize}
+\tightlist
+\item
+  kinetic integral (T integral)\\
+  note \(g(A,a,l,m,n)\) as \(\mid aAlmn \rangle\), it's easy to show
+  that its derivatives have following properties:\\
+  \[\frac{\partial}{\partial x_A} \mid aAlmn \rangle = (lx_A^{-1}-2ax_A) \mid aAlmn \rangle\]
+  \[\frac{\partial^2}{\partial x_A^2} \mid aAlmn \rangle = (l(l-1)x_A^{-2}-2a(2l+1)+4a^2x_A^2) \mid aAlmn \rangle \]\\
+  so that: 
+  \begin{align*}
+  T &=
+  \alpha_2 (2(l_2+m_2+n_2)+3)S_{l_1m_1n_1;l_2m_2n_2}
+  \\ &-
+  2\alpha_2^2 \big(S_{l_1m_1n_1;(l_2+2)m_2n_2} +
+  S_{l_1m_1n_1;l_2(m_2+2)n_2} +
+  S_{l_1m_1n_1;l_2m_2(n_2+2)}\big) 
+  \\ &-
+  \frac{1}{2}\big(l_2(l_2-1)S_{l_1m_1n_1;(l_2-2)m_2n_2} +
+  m_2(m_2-1)S_{l_1m_1n_1;l_2(m_2-2)n_2} 
+  \\ &+
+  n_2(n_2-1)S_{l_1m_1n_1;l_2m_2(n_2-2)}\big)
+  \end{align*}
+\end{itemize}
+
+    \begin{itemize}
+\tightlist
+\item
+  nuclear Coulomb integral (V integral; without nucleus-nucleus Coulomb
+  integral!)\\
+  \begin{align*}
+  V_{ABC} &= \int g(A,a,l_1,m_1,n_1)\frac{1}{r_C}g(B,b,l_2,m_2,n_2)d\tau
+  \\
+  &=N_AN_B \frac{1}{2\pi}e^{-ab/(a+b)\cdot \overline{AB}^2} \sum_{lmn} f_l(l_1,l_2,\overline{PA}_x, \overline{PB}_x) f_m(m_1,m_2,\overline{PA}_y, \overline{PB}_y) f_n(n_1,n_2,\overline{PA}_z, \overline{PB}_z)
+  \\
+  &\times \int e^{i\mathbf{k}\cdot \mathbf{r}_{cp}} \frac{1}{k^2}d\mathbf{k} \int e^{ik_x x}x^l e^{-(a+b)x^2} dx \int e^{ik_y y}y^m e^{-(a+b)y^2} dy \int e^{ik_y y}y^n e^{-(a+b)z^2} dz
+  \end{align*}
+  \\
+  we here omit the derivation, giving result directly as:\\
+  \begin{align*}
+  V_{ABC} &= 
+  \frac{2\pi}{a+b}e^{-ab/(a+b)\cdot\overline{AB}^2} \sum_{\nu}^{N}\sum_{I=0}^{l_1+l_2}
+  \sum_{J=0}^{m_1+m_2}\sum_{K=0}^{n_1+n_2} 
+  G_{l_1l_2}^{I}(A_x,B_x,C_x)
+  \\
+  &\times G_{m_1m_2}^{J}(A_y,B_y,C_y) G_{n_1n_2}^{K}(A_z,B_z,C_z)
+  F_{\nu}[(a+b)\overline{PC}^2]\delta_{\nu,I+J+K}
+   \end{align*} 
+  where 
+  \begin{align*}
+  G_{l_1l_2}^{I}(A_x,B_x,C_x) = \sum_{i=0}^{l_1+l_2}\sum_{r=0}^{[i/2]} \sum_{u=0}^{[i/2]-r} (-1)^i f_i (l_1,l_2,\overline{PA}_x,\overline{PB}_x)
+  \\ \times
+  \frac{(-1)^u i!(\overline{PC}_x)^{i-2r-2u}}{r!u!(i-2r-2u)!} \big(\frac{1}{4(a+b)}\big)^{r+u} \delta_{I,i-2r-u}
+   \end{align*}
+\end{itemize}
+
+    \begin{itemize}
+\tightlist
+\item
+  ERI integral\\
+  \begin{align*}
+  I &= \frac{2\pi^2}{(a+b)(c+d)}\big(\frac{1}{a+b+c+d}\big)^{1/2} e^{-ac/(a+b)\cdot \overline{AB}^2 - cd/(c+d)\cdot \overline{CD}^2} 
+  \\ 
+  &\times
+  \sum_{\nu=0}^{N} F_{\nu}(\overline{PQ}^2/(4\gamma))\sum_{I=0}^{l_1+l_2+l_3+l_4}
+  \sum_{J=0}^{m_1+m_2+m_3+m_4}\sum_{K=0}^{n_1+n_2+n_3+n_4}
+  D_{l_1l_2l_3l_4}^I (A_x,B_x,C_x,D_x)
+  \\ 
+  &\times
+  D_{m_1m_2m_3m_4}^J (A_y,B_y,C_y,D_y)
+  D_{n_1n_2n_3n_4}^K (A_z,B_z,C_z,D_z)\delta_{\nu,I+J+K}
+   \end{align*}
+   where
+  \begin{align*}
+  \gamma &= (a+b+c+d)/[4(a+b)(c+d)]
+  \\
+  D_{l_1l_2l_3l_4}^I (A_x,B_x,C_x,D_x) &= \sum_{l=0}^{l_1+l_2}\sum_{l'=0}^{l_3+l_4}
+  \sum_{u=0}^{[(l+l')/2]} \frac{(-1)^u (l+l')! \overline{PQ}_x^{l+l'-2u}}{u!(l+l'-2u)!\gamma^{l+l'-u}}
+  \\ 
+  &\times
+  H_{l_1l_2}^l (\overline{PA}_x,\overline{PB}_x,a+b) (-1)^{l'} 
+  H_{l_3l_4}^{l'} (\overline{QC}_x,\overline{QD}_x,c+d)\delta_{I,l+l'-u}
+  \end{align*}
+  where 
+  \[
+  H_{l_1l_2}^l (\overline{PA}_x,\overline{PB}_x,\beta)
+  = \sum_{i=0}^{l_1+l_2}\sum_{r=0}^{[i/2]} \frac{i!}{r!(i-2r)!(4\beta)^{i-r}} f_i (l_1,l_2,\overline{PA}_x,\overline{PB}_x)\delta_{l,i-2r}
+  \]
+\end{itemize}
+
+    \section{SCF procedure}\label{scf-procedure}
+
+    \paragraph{procedure}\label{procedure}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  read and construct basis set space.\\
+\item
+  calculate S, H, ERI inetgral matrix. Symmetric orthogonalize S to get
+  transfrom matrix X and its inverse Y.
+\item
+  assume H as Fock matrix, solve the coefficents, then get initial
+  density matrix P for guess.
+\item
+  from P, H, G matrix to claculate Fock matrix, by transform X to F'.
+\item
+  solve the eigenvalue problem of F', get its eigenvalues e and
+  eigenvectors C', and by transform X to C.
+\item
+  determine the population of MOs, then calculate energy E, density
+  matrix P.\\
+\item
+  if E and P is consistent with the last step, jump loop.
+\end{enumerate}
+
+    \section{Symmetry(lack)}\label{symmetrylack}
+
+    \section{Test and result}\label{test-and-result}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule
+test & result {[}au{]} & Gauss09 {[}au{]} & remark\tabularnewline
+\midrule
+\endhead
+H & -0.42244193 & -0.4982329 & not suit for open-shell\tabularnewline
+He & -2.85516043 & -2.8551604 & yes\tabularnewline
+H2 & -1.11003090 & -1.1100309 & yes\tabularnewline
+HeH+ & -2.89478689 & -2.8947869 & yes\tabularnewline
+H4 & -1.80246920 & -1.7251712 & no\tabularnewline
+CH4 & vibration & -39.9119255 & no\tabularnewline
+\bottomrule
+\end{longtable}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+    \end{document}
+

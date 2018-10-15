@@ -7,7 +7,6 @@
 #include "Hsbg_Tools.h"
 #include "Hsbg_Global.h"
 #include "Hsbg_Tasker.h"
-#include "Hsbg_Integral_GTO.h"
 #include "Hsbg_SCF.h"
 
 using namespace std;

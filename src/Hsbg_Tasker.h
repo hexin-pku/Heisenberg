@@ -1,6 +1,3 @@
-// Alias: Hsbg_Parser.h
-// this file is the parser of task, dealing with the geometry and basis
-
 #ifndef Hsbg_Parser_H
 #define Hsbg_Parser_H
 
