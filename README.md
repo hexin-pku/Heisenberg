@@ -1,8 +1,6 @@
 <p><br>
 <h1 style="text-align:center"><font face="Times" size=6> Tutorial of Heisenberg - ver.01 </font></h1>
 <br>
-  
-##### 本程序与小组合作~~私人~~项目  https://github.com/Utenaq/2018QC-Project-Ab-initio-wavefunction-program 存在关联 
 
 -----
 
@@ -285,11 +283,10 @@
 >| m_Diff        | MatrixXd &M, MatrixXd &N                                   |double                                    |计算初始和新生成的密度矩阵是否收敛 |
 
 ## 3.分子积分的处理
-使用通用的积分，这里详细说明其计算方法。
+使用通用的积分，计算公式参考`/doc/Hsbg_doc.pdf`。
 
-#### [PGTO的表达和积分的计算(友情提示：请点击链接)](https://rawgit.com/XShinHe/Heisenberg/master/doc/PGTO.html)
 
-#### 积分的函数说明  (**Hsbg_Integral_GTO.h**)
+#### 积分的函数说明  (**Hsbg_Integral_GTO_old.h**)(弃用)
 
 >| 函数名称             | 接受参数                                    | 返回类型 | 计算含义                           |
 >| ------------------- | ------------------------------------------ | ------- | ------------------------------ |
@@ -317,6 +314,10 @@
 >| general_InteGTO_V   | Orbital& orb1, Orbital& orb2, Atom& PN, int f1, int f2, int f3, int f4, int f5, int f6, int d1, int d2, int d3, int d4, int d5, int d6  | double  | 广义类型gto的V积分(递推法) |
 >| IntecGTO_ERI | Orbital_cgto& cgto1,  Orbital_cgto& cgto2,  Orbital_cgto& cgto3,  Orbital_cgto& cgto4       | double     | 广义类型cgto的ERI积分      |
 >| general_InteGTO_ERI | Orbital& orb1, Orbital& orb2,	Orbital& orb3, 	Orbital& orb4,	int f1,	int f2, int f3, int f4, int f5, int f6, int f7, int f8, int f9, int f10, int f11, int f12,	int d1, int d2, int d3, int d4, int d5, int d6, int d7, int d8, int d9, int d10, int d11, int d12   |   double  | 广义类型gto的ERI积分（递推法）      |
+
+#### 新的积分的函数说明  (**Hsbg_Integral_GTO.h**)
+
+**待更新**
 
 ## 4.自洽场计算的流程
 
